@@ -44,6 +44,7 @@ function resize(){
  document.documentElement.style.setProperty('--rail',mobile?'52px':`${100*s}px`);
  document.documentElement.style.setProperty('--hero-mobile-scale',Math.min((innerWidth-98)/701,.6));
  document.documentElement.style.setProperty('--comparison-scale',Math.min((innerWidth-98)/521,1));
+ document.documentElement.style.setProperty('--challenge-scale',Math.min((innerWidth-98)/380,1));
  stage.style.width=mobile?'100%':`${innerWidth/s}px`;
 }
 const action=(n,callback,label)=>{if(!n)return;n.setAttribute('role','button');n.tabIndex=0;n.classList.add('action-target');if(label)n.setAttribute('aria-label',label);n.addEventListener('click',callback);n.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();callback();}});};
@@ -110,6 +111,16 @@ function sourceScreen(id){
    }
   }
  }
+ if(id==='05'){
+  const section=$('[data-name="05-PROBLEMS"]',root),grid=document.createElement('div');grid.className='challenges-grid';
+  for(const number of [1,2,3]){
+   const original=$(`[data-name="VIS${number}"]`,section),art=$(`[data-name="vis-${number}"]`,original),card=document.createElement('article'),visual=document.createElement('div'),caption=document.createElement('p');
+   card.className='challenge-card'+(number===2?' challenge-card--question':'');visual.className='challenge-visual';art.classList.add('challenge-art');art.setAttribute('aria-hidden','true');
+   caption.className='challenge-caption';caption.innerHTML=$$('p',original).map(p=>p.innerHTML).join('<br>');
+   visual.append(art);card.append(visual,caption);grid.append(card);original.remove();
+  }
+  section.append(grid);
+ }
  if(id==='09'){
   const grid=document.createElement('div');grid.className='support-cards-grid';for(const card of $$('[data-name^="support-"]',root)){card.style.position='relative';card.style.left='auto';card.style.top='auto';grid.append(card);}root.append(grid);
  }
@@ -160,6 +171,7 @@ function featuresListHtml(){return `<ul class="features-list">${featureHighlight
 function mobileHtml(id,desktop){
  if(id==='01')return `<h1>Помогаем получить максимум прибыли от сделок с недвижимостью</h1><p class="hero-description">RECRM.RU — это облачный сервис для руководителей и сотрудников агентства недвижимости, позволяющий работать легко, быстро и эффективно.</p><div class="mobile-hero-visual">${$('[data-name="VIS"]',desktop)?.outerHTML||''}</div><div class="hero-price">от <strong>345 ₽</strong><small>/мес. за сотрудника</small></div><button class="mobile-cta" data-open-form>Попробовать бесплатно →</button>`;
  if(id==='02')return `<h1>Ключевые возможности нашего продукта</h1><div class="features-mobile-visual"><img src="./assets/70364.png" alt="Интерфейс RECRM"><button data-overview aria-label="Смотреть видеообзор RECRM"><img src="./assets/777e8.svg" alt=""></button></div>${featuresListHtml()}`;
+ if(id==='05')return `<h1>Топ-3 проблемы, которые мы решаем</h1>${$('.challenges-grid',desktop).outerHTML}`;
  if(id==='04'||id==='06'){
   const cards=$$('.feature-row',desktop).flatMap(row=>$$('.comparison-card',row).sort((a,b)=>Number(a.style.gridColumn)-Number(b.style.gridColumn)));
   const title=$$('[data-name="H1"] p',desktop).map(p=>{const copy=p.cloneNode(true);$$('br',copy).forEach(br=>br.replaceWith(' '));return copy.textContent.trim();}).join(' ');

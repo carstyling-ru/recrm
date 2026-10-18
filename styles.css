@@ -52,11 +52,22 @@
 .comparison-visual { width: 100%; height: 180px; overflow: hidden; background: #f7f7f7; flex: none; }
 .comparison-art { position: relative; margin: 0 auto; }
 .comparison-description { position: static !important; inset: auto !important; margin: 0 !important; font-size: 20px !important; line-height: 26px !important; white-space: normal !important; }
+.challenges-grid { position: absolute; top: 450px; left: 217px; right: 83px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.challenge-card { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.challenge-visual { display: flex; justify-content: center; width: 100%; height: 420px; flex: none; }
+.challenge-art { position: relative !important; inset: auto !important; width: 380px; height: 420px; flex: none; }
+.challenge-caption { width: 100%; margin: 0; color: white; font: 400 20px/24px Roboto, sans-serif; text-align: center; }
+.challenge-card--question { gap: 10px; }
+.challenge-card--question .challenge-caption { order: -1; }
 @media (min-width: 761px) and (max-width: 1100px) {
   .desktop-layout .feature-content:has(.comparison-card) { gap: 20px !important; }
   .desktop-layout .comparison-description { line-height: 24px !important; }
 }
 @media (max-width: 760px) {
+  .mobile-layout .challenges-grid { position: static; grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .mobile-layout .challenge-visual { position: relative; height: calc(420px * var(--challenge-scale)); overflow: hidden; }
+  .mobile-layout .challenge-art { position: absolute !important; left: 50% !important; top: 0 !important; margin-left: -190px; transform: scale(var(--challenge-scale)); transform-origin: top center; }
+  .mobile-layout .challenge-caption { font-size: 14px; line-height: 20px; }
   .comparison-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 26px; }
   .mobile-layout .comparison-card { grid-column: auto !important; grid-row: auto !important; justify-self: stretch !important; }
   .mobile-layout .comparison-visual { height: calc(180px * var(--comparison-scale)); }
