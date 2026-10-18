@@ -24,3 +24,49 @@
   width: 20px;
   height: 20px;
 }
+
+.hero-copy {
+  position: absolute;
+  top: 200px;
+  left: 219px;
+  right: 720px;
+  max-width: calc(78.82% - 270px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: white;
+}
+.hero-copy h1 {
+  margin: 0;
+  font: 900 72px/70px 'Roboto Condensed', sans-serif;
+  white-space: normal;
+}
+.hero-rule { width: 225px; height: 5px; margin: 32px 0; background: white; flex: none; }
+.hero-copy .hero-description { max-width: 690px; font-size: 20px; line-height: 24px; }
+.hero-copy .hero-price { display: flex; align-items: baseline; gap: 14px; margin-top: 64px; font-family: 'Roboto Condensed', sans-serif; }
+.hero-copy .hero-price > span { font-size: 32px; }
+.hero-copy .hero-price strong { font-size: 72px; font-weight: 900; white-space: nowrap; }
+.hero-copy .hero-price small { max-width: 170px; font-size: 20px; line-height: 24px; }
+.hero-cta { display: flex; align-items: center; gap: 12px; margin-top: 24px; padding: 0; color: white; background: transparent; font: 400 20px/28px Inter, sans-serif; text-decoration: underline; text-underline-offset: 4px; }
+.hero.desktop-layout .hero-visual { left: auto !important; right: 82px; transform: none !important; }
+
+/* The original recrm.ru illustration moves each object on the same 10-second cycle. */
+.hero-visual > div { animation: hero-object-float 10s ease-in-out infinite; transform-origin: center top; }
+.hero-visual > [data-name="Person"] { --motion-y: -53px; }
+.hero-visual > [data-name="Cloud-2"] { --motion-scale: .9; }
+.hero-visual > [data-name="Cloud-3"] { --motion-x: 42px; --motion-y: -5.3px; --motion-start-y: -5.3px; }
+.hero-visual > [data-name="Cloud-1"] { --motion-x: 18px; }
+.hero-visual > [data-name="Cup"] { --motion-x: -24px; --motion-y: -26.5px; }
+.hero-visual > [data-name="Calendar"] { --motion-x: 12px; --motion-y: -10.6px; }
+.hero-visual > [data-name="Folder"] { --motion-x: 30px; --motion-y: -15.9px; }
+.hero-visual > [data-name="Tasks"], .hero-visual > [data-name="Phone"] { --motion-x: -30px; --motion-y: -26.5px; }
+.hero-visual > [data-name="Laptop"] { --motion-x: 6px; --motion-y: -21.2px; --motion-scale: .98; }
+@keyframes hero-object-float {
+  0%, 100% { transform: translate(0, var(--motion-start-y, 0px)) scale(1); }
+  50% { transform: translate(var(--motion-x, 0px), var(--motion-y, 0px)) scale(var(--motion-scale, 1)); }
+}
+
+@media (max-width: 760px) {
+  .mobile-layout .mobile-hero-visual { height: calc(556px * var(--hero-mobile-scale)); }
+  .mobile-layout .mobile-hero-visual > .hero-visual { left: auto !important; right: calc(82px * var(--hero-mobile-scale)); transform: scale(var(--hero-mobile-scale)) !important; transform-origin: top right !important; }
+}

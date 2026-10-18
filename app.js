@@ -33,6 +33,7 @@ function resize(){
  const mobile=innerWidth<=760,s=mobile?1:Math.min(innerHeight/1158,innerWidth/1440);
  document.documentElement.style.setProperty('--scale',s);
  document.documentElement.style.setProperty('--rail',mobile?'52px':`${100*s}px`);
+ document.documentElement.style.setProperty('--hero-mobile-scale',Math.min((innerWidth-98)/701,.6));
  stage.style.width=mobile?'100%':`${innerWidth/s}px`;
 }
 const action=(n,callback,label)=>{if(!n)return;n.setAttribute('role','button');n.tabIndex=0;n.classList.add('action-target');if(label)n.setAttribute('aria-label',label);n.addEventListener('click',callback);n.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();callback();}});};
@@ -64,7 +65,15 @@ function sourceScreen(id){
   if(/^(Попробуйте|Попробовать) бесплатно$/.test(n.textContent.trim()))action(n,()=>go('form'));
  }
  const heading=$('[data-name="H1"] p',root)||$$('p',root).find(n=>n.style.fontSize==='72px');if(heading){heading.setAttribute('role','heading');heading.setAttribute('aria-level','1');}
- if(id==='01'){root.classList.add('hero');}
+ if(id==='01'){
+  root.classList.add('hero');
+  const intro=$('[data-name="01-INTRO"]',root),title=$('[data-name="H1"] p',intro).cloneNode(true),description=$('[data-name="TITLE"] > p',intro).textContent;
+  $$('br',title).forEach(br=>br.replaceWith(' '));
+  const copy=document.createElement('section');copy.className='hero-copy';
+  copy.innerHTML=`<h1>${esc(title.textContent.replace(/\s+/g,' ').trim())}</h1><div class="hero-rule"></div><p class="hero-description">${esc(description)}</p><div class="hero-price"><span>от</span><strong>345 ₽</strong><small>/мес. за сотрудника</small></div><button class="hero-cta" data-open-form>Попробовать бесплатно <span aria-hidden="true">→</span></button>`;
+  $$('[data-name="TITLE"],[data-name="PRICE"],[data-name="Try4free"]',intro).forEach(n=>n.remove());
+  $('[data-name="VIS"]',intro).classList.add('hero-visual');intro.append(copy);
+ }
  if(id==='31'){
   const cards=$$('div',root).filter(n=>n.style.height==='614px'&&n.style.width==='335px');
   const grid=document.createElement('div');grid.className='pricing-grid';
