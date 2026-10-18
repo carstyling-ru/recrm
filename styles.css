@@ -59,11 +59,29 @@
 .challenge-caption { width: 100%; margin: 0; color: white; font: 400 20px/24px Roboto, sans-serif; text-align: center; }
 .challenge-card--question { gap: 10px; }
 .challenge-card--question .challenge-caption { order: -1; }
+.support-cards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: none; }
+.onboarding-card { display: flex; flex-direction: column; min-width: 0; min-height: 564px; width: 100% !important; height: auto !important; padding: 12px 16px 0 34px; }
+.onboarding-title { position: static !important; width: auto !important; min-height: 64px; margin: 0 0 36px !important; }
+.onboarding-description { position: static !important; inset: auto !important; width: 100%; height: auto !important; flex: 1; font-size: 18px; line-height: 24px !important; white-space: normal !important; }
+.onboarding-description > p + p { margin-top: 24px; }
+.onboarding-materials { display: flex; flex-direction: column; gap: 24px; }
+.onboarding-material { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 12px; align-items: start; }
+.onboarding-material > div { position: relative !important; inset: auto !important; transform: none !important; }
+.onboarding-visual { position: relative; width: 100%; height: 212px; flex: none; overflow: hidden; }
+.onboarding-art { position: absolute; top: -339px; left: 50%; width: 380px; height: 467px; transform: translateX(-50%); }
 @media (min-width: 761px) and (max-width: 1100px) {
   .desktop-layout .feature-content:has(.comparison-card) { gap: 20px !important; }
   .desktop-layout .comparison-description { line-height: 24px !important; }
 }
 @media (max-width: 760px) {
+  .mobile-layout .support-cards-grid { position: static; grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .mobile-layout .onboarding-card { min-height: 0; padding: 0; }
+  .mobile-layout .onboarding-title { min-height: 0; margin-bottom: 16px !important; font-size: 23px !important; line-height: 28px !important; }
+  .mobile-layout .onboarding-description, .mobile-layout .onboarding-description p { font-size: 14px !important; line-height: 20px !important; }
+  .mobile-layout .onboarding-description > p + p { margin-top: 16px; }
+  .mobile-layout .onboarding-materials { gap: 16px; }
+  .mobile-layout .onboarding-visual { height: calc(212px * var(--onboarding-scale)); margin-top: 16px; }
+  .mobile-layout .onboarding-art { top: calc(-339px * var(--onboarding-scale)); transform: translateX(-50%) scale(var(--onboarding-scale)); transform-origin: top center; }
   .mobile-layout .challenges-grid { position: static; grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .mobile-layout .challenge-visual { position: relative; height: calc(420px * var(--challenge-scale)); overflow: hidden; }
   .mobile-layout .challenge-art { position: absolute !important; left: 50% !important; top: 0 !important; margin-left: -190px; transform: scale(var(--challenge-scale)); transform-origin: top center; }

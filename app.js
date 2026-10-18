@@ -45,6 +45,7 @@ function resize(){
  document.documentElement.style.setProperty('--hero-mobile-scale',Math.min((innerWidth-98)/701,.6));
  document.documentElement.style.setProperty('--comparison-scale',Math.min((innerWidth-98)/521,1));
  document.documentElement.style.setProperty('--challenge-scale',Math.min((innerWidth-98)/380,1));
+ document.documentElement.style.setProperty('--onboarding-scale',Math.min((innerWidth-98)/380,1));
  stage.style.width=mobile?'100%':`${innerWidth/s}px`;
 }
 const action=(n,callback,label)=>{if(!n)return;n.setAttribute('role','button');n.tabIndex=0;n.classList.add('action-target');if(label)n.setAttribute('aria-label',label);n.addEventListener('click',callback);n.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();callback();}});};
@@ -122,7 +123,21 @@ function sourceScreen(id){
   section.append(grid);
  }
  if(id==='09'){
-  const grid=document.createElement('div');grid.className='support-cards-grid';for(const card of $$('[data-name^="support-"]',root)){card.style.position='relative';card.style.left='auto';card.style.top='auto';grid.append(card);}root.append(grid);
+  const grid=document.createElement('div');grid.className='support-cards-grid';
+  for(const card of $$('[data-name^="support-"]',root)){
+   const [description,title]=card.children,visual=document.createElement('div'),art=document.createElement('div');
+   card.classList.add('onboarding-card');card.style.position='relative';card.style.left='auto';card.style.top='auto';
+   description.classList.add('onboarding-description');title.classList.add('onboarding-title');title.setAttribute('role','heading');title.setAttribute('aria-level','2');
+   $$('p',description).filter(p=>!p.textContent.replaceAll('\u200b','').trim()).forEach(p=>p.remove());
+   if(card.dataset.name==='support-3'){
+    description.classList.add('onboarding-materials');const icons=$$('[data-name^="icn / "]',card);
+    $$('p',description).forEach((p,i)=>{const row=document.createElement('div');row.className='onboarding-material';row.append(icons[i],p);description.append(row);});
+   }
+   visual.className='onboarding-visual';art.className='onboarding-art';visual.setAttribute('aria-hidden','true');
+   for(const child of [...card.children])if(child!==description&&child!==title)art.append(child);
+   visual.append(art);card.replaceChildren(title,description,visual);grid.append(card);
+  }
+  root.append(grid);
  }
  if(id==='02'){
   const section=$('[data-name="02-FEATURES"]',root),visual=$('[data-name="VIS"]',section),play=$('[data-name="iconfinder_youtube-play_1608384 1"]',visual);
@@ -133,7 +148,7 @@ function sourceScreen(id){
  if(['03','08','10'].includes(id))setupSlider(root,id);
  if(id==='08')for(const p of $$('p',root))if(p.textContent.includes('Ознакомьтесь с подробным'))action(p,()=>openMedia(`<h2>Выгрузка объявлений на площадки</h2><p>Авито, Циан, Яндекс Недвижимость, Домклик, Юла, N1, МирКвартир и другие интернет-площадки.</p><p style="margin-top:20px"><a href="https://recrm.ru/" target="_blank" rel="noopener">Подробный список на сайте RECRM ↗</a></p>`));
  if(id==='07'){action($$('img',root).find(n=>n.src.includes('24533'))?.parentElement,()=>window.open('https://apps.apple.com/ru/app/recrm-app/id1448632364?l=ru&ls=1','_blank','noopener'));action($$('img',root).find(n=>n.src.includes('7bc21'))?.parentElement,()=>window.open('https://play.google.com/store/apps/details?id=com.recrm.online','_blank','noopener'));}
- if(id==='09')for(const p of $$('p',root)){if(p.textContent.includes('Обучающие видео'))action(p,()=>go('51'));if(p.textContent.includes('Руководство пользователя'))action(p,()=>go('51'));}
+ if(id==='09')for(const p of $$('.onboarding-material p',root))p.dataset.supportLink='';
  if(id==='10')for(const p of $$('p',root))if(p.textContent.trim()==='Site-Mechanics')action(p,()=>window.open('https://www.site-mechanics.ru/','_blank','noopener'));
  return root;
 }
@@ -172,6 +187,7 @@ function mobileHtml(id,desktop){
  if(id==='01')return `<h1>Помогаем получить максимум прибыли от сделок с недвижимостью</h1><p class="hero-description">RECRM.RU — это облачный сервис для руководителей и сотрудников агентства недвижимости, позволяющий работать легко, быстро и эффективно.</p><div class="mobile-hero-visual">${$('[data-name="VIS"]',desktop)?.outerHTML||''}</div><div class="hero-price">от <strong>345 ₽</strong><small>/мес. за сотрудника</small></div><button class="mobile-cta" data-open-form>Попробовать бесплатно →</button>`;
  if(id==='02')return `<h1>Ключевые возможности нашего продукта</h1><div class="features-mobile-visual"><img src="./assets/70364.png" alt="Интерфейс RECRM"><button data-overview aria-label="Смотреть видеообзор RECRM"><img src="./assets/777e8.svg" alt=""></button></div>${featuresListHtml()}`;
  if(id==='05')return `<h1>Топ-3 проблемы, которые мы решаем</h1>${$('.challenges-grid',desktop).outerHTML}`;
+ if(id==='09')return `<h1>Настройка и запуск «под ключ»</h1>${$('.support-cards-grid',desktop).outerHTML}`;
  if(id==='04'||id==='06'){
   const cards=$$('.feature-row',desktop).flatMap(row=>$$('.comparison-card',row).sort((a,b)=>Number(a.style.gridColumn)-Number(b.style.gridColumn)));
   const title=$$('[data-name="H1"] p',desktop).map(p=>{const copy=p.cloneNode(true);$$('br',copy).forEach(br=>br.replaceWith(' '));return copy.textContent.trim();}).join(' ');
@@ -192,6 +208,7 @@ function mobileHtml(id,desktop){
 function problemHtml(mobile=false){const p=content.problems[problemIndex];return `<h2 style="${mobile?'':'position:absolute;left:217px;top:200px;font:900 48px/70px \'Roboto Condensed\';color:white'}">Real Estate CRM решает вопросы</h2><div class="problem-tabs">${content.problems.map((p,i)=>`<button data-problem="${i}" class="${problemIndex===i?'active':''}" aria-label="${esc(p.title)}" aria-pressed="${problemIndex===i}"></button>`).join('')}</div><div class="problem-detail"><h1>${esc(p.title)}</h1><div class="title-rule" style="background:white"></div><p>${esc(p.text)}</p></div><img class="problem-visual" src="${esc(p.image)}" alt="${esc(p.title)}">`;}
 function formHtml(){return `<div class="form-content"><h1>Хочу попробовать<br>Real Estate CRM в деле</h1><div class="title-rule"></div><form id="trialForm" class="trial-form"><label for="name">Как к вам обращаться?<input name="name" id="name" autocomplete="name" placeholder="Ваше имя" required minlength="2" value="${esc(formValues.name)}"></label><label class="sr-only" for="email">Электронная почта</label><input type="email" id="email" name="email" placeholder="Электронная почта" autocomplete="email" required value="${esc(formValues.email)}"><label for="phone"><span class="sr-only">Телефон для связи с вами</span><input type="tel" inputmode="tel" id="phone" name="phone" placeholder="Телефон для связи с вами" autocomplete="tel" required value="${esc(formValues.phone)}"><small>Только цифры, от 10 до 15</small></label><button class="submit-button" type="submit">ОТПРАВИТЬ</button></form><p class="form-policy">Регистрируясь, вы соглашаетесь с <a href="#legal-terms" data-legal="terms">Условиями использования</a> и <a href="#legal-privacy" data-legal="privacy">Политикой конфиденциальности</a></p><p class="form-note">Демонстрационная форма прототипа. Данные не отправляются.</p></div>`;}
 function wire(){
+ $$('[data-support-link]',stage).forEach(n=>action(n,()=>go('51')));
  $$('[data-faq]',stage).forEach(b=>b.onclick=()=>{const g=content.faq[Number(b.dataset.faq)];openMedia('<h2>'+esc(g.title)+'</h2><div class="faq-modal">'+g.items.map(i=>'<h3>'+esc(i.question)+'</h3><p>'+esc(i.answer)+'</p>').join('')+'</div>');});
 
  $$('[data-legal]',stage).forEach(a=>a.onclick=e=>{e.preventDefault();openMedia('<h2>'+ (a.dataset.legal==='privacy'?'Политика конфиденциальности':'Условия использования')+'</h2><p>'+esc(content.legal)+'</p><p style="margin-top:20px">Демонстрационный прототип. Форма не передаёт и не сохраняет данные на сервере.</p><p><a href="https://recrm.ru/" target="_blank" rel="noopener">Действующие условия на сайте RECRM ↗</a></p>');});
