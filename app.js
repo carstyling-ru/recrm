@@ -43,6 +43,7 @@ function resize(){
  document.documentElement.style.setProperty('--scale',s);
  document.documentElement.style.setProperty('--rail',mobile?'52px':`${100*s}px`);
  document.documentElement.style.setProperty('--hero-mobile-scale',Math.min((innerWidth-98)/701,.6));
+ document.documentElement.style.setProperty('--comparison-scale',Math.min((innerWidth-98)/521,1));
  stage.style.width=mobile?'100%':`${innerWidth/s}px`;
 }
 const action=(n,callback,label)=>{if(!n)return;n.setAttribute('role','button');n.tabIndex=0;n.classList.add('action-target');if(label)n.setAttribute('aria-label',label);n.addEventListener('click',callback);n.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();callback();}});};
@@ -98,7 +99,14 @@ function sourceScreen(id){
  if(id==='04'||id==='06'){
   const block=$('[data-name="Content"]',root);if(block){block.classList.add('feature-content');
    for(const row of [...block.children].filter(n=>$$('[data-name^="Adv"]',n).length)){
-    row.classList.add('feature-row');for(const card of $$('[data-name^="Adv"]',row)){const right=parseFloat(card.style.marginLeft)>0;card.style.marginLeft='0';card.style.gridColumn=right?'2':'1';card.style.justifySelf=right?'end':'start';}
+    row.classList.add('feature-row');for(const card of $$('[data-name^="Adv"]',row)){
+     const right=parseFloat(card.style.marginLeft)>0;card.style.marginLeft='0';card.style.gridColumn=right?'2':'1';card.style.justifySelf=right?'end':'start';
+     card.classList.add('comparison-card');const description=card.firstElementChild,visual=document.createElement('div'),art=document.createElement('div');
+     visual.className='comparison-visual';art.className='comparison-art';art.style.width=card.style.width;art.style.height=card.style.height;
+     for(const child of [...card.children])if(child!==description)art.append(child);
+     visual.append(art);card.prepend(visual);description.classList.add('comparison-description');$$('br',description).forEach(br=>br.replaceWith(' '));
+     for(const p of $$('p',description)){const span=document.createElement('span');span.innerHTML=p.innerHTML+' ';p.replaceWith(span);}
+    }
    }
   }
  }
@@ -152,6 +160,11 @@ function featuresListHtml(){return `<ul class="features-list">${featureHighlight
 function mobileHtml(id,desktop){
  if(id==='01')return `<h1>Помогаем получить максимум прибыли от сделок с недвижимостью</h1><p class="hero-description">RECRM.RU — это облачный сервис для руководителей и сотрудников агентства недвижимости, позволяющий работать легко, быстро и эффективно.</p><div class="mobile-hero-visual">${$('[data-name="VIS"]',desktop)?.outerHTML||''}</div><div class="hero-price">от <strong>345 ₽</strong><small>/мес. за сотрудника</small></div><button class="mobile-cta" data-open-form>Попробовать бесплатно →</button>`;
  if(id==='02')return `<h1>Ключевые возможности нашего продукта</h1><div class="features-mobile-visual"><img src="./assets/70364.png" alt="Интерфейс RECRM"><button data-overview aria-label="Смотреть видеообзор RECRM"><img src="./assets/777e8.svg" alt=""></button></div>${featuresListHtml()}`;
+ if(id==='04'||id==='06'){
+  const cards=$$('.feature-row',desktop).flatMap(row=>$$('.comparison-card',row).sort((a,b)=>Number(a.style.gridColumn)-Number(b.style.gridColumn)));
+  const title=$$('[data-name="H1"] p',desktop).map(p=>{const copy=p.cloneNode(true);$$('br',copy).forEach(br=>br.replaceWith(' '));return copy.textContent.trim();}).join(' ');
+  return `<h1>${esc(title)}</h1><div class="comparison-grid">${cards.map(card=>card.outerHTML).join('')}</div>`;
+ }
  if(['21','24','41','42','43','51','61','62'].includes(id))return customHtml(id);
  if(id==='22')return problemHtml(true);
  if(id==='31')return `<h1>Сколько это стоит?</h1><p>Стоимость зависит от количества сотрудников вашей компании.</p>${[['Старт','1–2 сотрудника','17 990 ₽ / полгода','За всю компанию',''],['Бизнес','от 3 сотрудников','от 4 990 ₽ / мес.','За всю компанию','featured'],['Премиум','от 30 сотрудников','от 345 ₽ / мес.','За 1 сотрудника','premium']].map(([name,count,price,unit,cls])=>`<section class="mobile-price-card ${cls}"><h2>${name}</h2><p>${count}</p><ul><li>Клиенты, сделки, объекты и заявки — любое количество</li><li>Рекламные каналы: ${name==='Старт'?'2':'любое количество'}</li><li>Техподдержка: ${name==='Премиум'?'service-desk':'help-desk'}</li></ul><strong class="price">${price}</strong><p>${unit}</p><button class="inline-button" data-open-form>Попробовать бесплатно</button></section>`).join('')}`;
