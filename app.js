@@ -24,6 +24,15 @@ const definitions=[
  ['61','Полезные статьи','blog'],
  ['62','Главное мобильное приложение риэлтора','mobile-crm-guide']
 ];
+const featureHighlights=[
+ 'Постоянный поток собственников из интернета;',
+ 'Выгрузка рекламы на ведущие площадки и собственный веб-сайт;',
+ 'Планировщик риэлтора: звонки, встречи, показы;',
+ 'Настраиваемые воронки продаж. Набор риэлторских воронок;',
+ 'Совместные сделки, автоподбор объектов и заявок;',
+ 'API для обмена информацией с внешними продуктами;',
+ 'Интеграция с телефонией.'
+];
 const bluePages=new Set(['01','03','05','07','22','41','43','form']);
 let screens={},content={},current='01',previous='01',navigationLocked=false,menuOpen=false,problemIndex=0;
 let formValues={name:'',email:'',phone:''};
@@ -95,7 +104,12 @@ function sourceScreen(id){
  if(id==='09'){
   const grid=document.createElement('div');grid.className='support-cards-grid';for(const card of $$('[data-name^="support-"]',root)){card.style.position='relative';card.style.left='auto';card.style.top='auto';grid.append(card);}root.append(grid);
  }
- if(id==='02'){const play=$('[data-name="iconfinder_youtube_play_1608384 1"]',root)||$$('img',root).find(n=>n.src.includes('777e8'))?.parentElement;action(play,()=>showVideo('https://www.youtube.com/embed/iy-JT9-9Grw','Обзор RECRM'),'Смотреть видеообзор RECRM');}
+ if(id==='02'){
+  const section=$('[data-name="02-FEATURES"]',root),visual=$('[data-name="VIS"]',section),play=$('[data-name="iconfinder_youtube-play_1608384 1"]',visual);
+  $('[data-name="TEXT"]',section).replaceWith(template(`<div class="features-copy">${featuresListHtml()}</div>`));
+  visual.classList.add('features-visual');$('[data-name="slide-5 2"]',visual).classList.add('features-preview');play.classList.add('features-play');
+  action(play,()=>showVideo('https://www.youtube.com/embed/iy-JT9-9Grw','Обзор RECRM'),'Смотреть видеообзор RECRM');
+ }
  if(['03','08','10'].includes(id))setupSlider(root,id);
  if(id==='08')for(const p of $$('p',root))if(p.textContent.includes('Ознакомьтесь с подробным'))action(p,()=>openMedia(`<h2>Выгрузка объявлений на площадки</h2><p>Авито, Циан, Яндекс Недвижимость, Домклик, Юла, N1, МирКвартир и другие интернет-площадки.</p><p style="margin-top:20px"><a href="https://recrm.ru/" target="_blank" rel="noopener">Подробный список на сайте RECRM ↗</a></p>`));
  if(id==='07'){action($$('img',root).find(n=>n.src.includes('24533'))?.parentElement,()=>window.open('https://apps.apple.com/ru/app/recrm-app/id1448632364?l=ru&ls=1','_blank','noopener'));action($$('img',root).find(n=>n.src.includes('7bc21'))?.parentElement,()=>window.open('https://play.google.com/store/apps/details?id=com.recrm.online','_blank','noopener'));}
@@ -133,19 +147,21 @@ function customHtml(id){
  if(id==='43')return `<h1>Более 3000 риэлторов используют<br>ReCRM ежедневно в своей работе</h1><div class="title-rule"></div><strong class="map-year">2020</strong><img src="./assets/client-map.svg" alt="География клиентов RECRM по всей России" class="client-map"><input class="map-slider" type="range" min="2012" max="2020" value="2020" aria-label="Год на карте клиентов">`;
  if(id==='51')return supportHtml();if(id==='61')return blogHtml();if(id==='62')return articleHtml();return '';
 }
+function featuresListHtml(){return `<ul class="features-list">${featureHighlights.map(text=>`<li><span>${esc(text)}</span></li>`).join('')}</ul>`;}
 function mobileHtml(id,desktop){
  if(id==='01')return `<h1>Помогаем получить максимум прибыли от сделок с недвижимостью</h1><p class="hero-description">RECRM.RU — это облачный сервис для руководителей и сотрудников агентства недвижимости, позволяющий работать легко, быстро и эффективно.</p><div class="mobile-hero-visual">${$('[data-name="VIS"]',desktop)?.outerHTML||''}</div><div class="hero-price">от <strong>345 ₽</strong><small>/мес. за сотрудника</small></div><button class="mobile-cta" data-open-form>Попробовать бесплатно →</button>`;
+ if(id==='02')return `<h1>Ключевые возможности нашего продукта</h1><div class="features-mobile-visual"><img src="./assets/70364.png" alt="Интерфейс RECRM"><button data-overview aria-label="Смотреть видеообзор RECRM"><img src="./assets/777e8.svg" alt=""></button></div>${featuresListHtml()}`;
  if(['21','24','41','42','43','51','61','62'].includes(id))return customHtml(id);
  if(id==='22')return problemHtml(true);
  if(id==='31')return `<h1>Сколько это стоит?</h1><p>Стоимость зависит от количества сотрудников вашей компании.</p>${[['Старт','1–2 сотрудника','17 990 ₽ / полгода','За всю компанию',''],['Бизнес','от 3 сотрудников','от 4 990 ₽ / мес.','За всю компанию','featured'],['Премиум','от 30 сотрудников','от 345 ₽ / мес.','За 1 сотрудника','premium']].map(([name,count,price,unit,cls])=>`<section class="mobile-price-card ${cls}"><h2>${name}</h2><p>${count}</p><ul><li>Клиенты, сделки, объекты и заявки — любое количество</li><li>Рекламные каналы: ${name==='Старт'?'2':'любое количество'}</li><li>Техподдержка: ${name==='Премиум'?'service-desk':'help-desk'}</li></ul><strong class="price">${price}</strong><p>${unit}</p><button class="inline-button" data-open-form>Попробовать бесплатно</button></section>`).join('')}`;
- const mainImage={'02':'70364.png','07':'a900d.png','10':'99c59.png'}[id];
+ const mainImage={'07':'a900d.png','10':'99c59.png'}[id];
  const seen=new Set();const paragraphs=$$('p',desktop).map(n=>n.textContent.trim()).filter(t=>t&&t!=='​'&&!seen.has(t)&&seen.add(t));
  const title=paragraphs.shift()||definitions.find(d=>d[0]===id)?.[1];
  if(id==='03'){
   const cards=$$('[data-name^="feedback"]',desktop);return `<h1>Почему мы?</h1><p>Мы оцифровываем агентства недвижимости с 2012 года.</p>${cards.map(c=>`<article class="mobile-card">${$$('img',c).filter(n=>/939bd|eece3|5a121/.test(n.src)).map(n=>`<img src="${esc(n.getAttribute('src'))}" alt="Логотип клиента">`).join('')}${$$('p',c).map(n=>`<p>${esc(n.textContent)}</p>`).join('')}</article>`).join('')}`;
  }
  if(id==='08')return `<h1>Выгрузка на площадки</h1><p>Автоматизированная отправка объявлений на профильные интернет-площадки экономит рабочее время сотрудников агентства.</p><div class="mobile-logos">${['c6ebe.svg','7de75.svg','c463d.svg','e6077.svg','2966d.png'].map(s=>`<img src="./assets/${s}" alt="Рекламная площадка">`).join('')}</div>`;
- return `<h1>${esc(title)}</h1>${mainImage?`<img class="mobile-image" src="./assets/${mainImage}" alt="Интерфейс RECRM">`:''}${paragraphs.map(t=>`<p style="margin-bottom:16px">${esc(t)}</p>`).join('')}${id==='02'?'<button class="inline-button" data-overview>Смотреть обзор ▶</button>':''}`;
+ return `<h1>${esc(title)}</h1>${mainImage?`<img class="mobile-image" src="./assets/${mainImage}" alt="Интерфейс RECRM">`:''}${paragraphs.map(t=>`<p style="margin-bottom:16px">${esc(t)}</p>`).join('')}`;
 }
 function problemHtml(mobile=false){const p=content.problems[problemIndex];return `<h2 style="${mobile?'':'position:absolute;left:217px;top:200px;font:900 48px/70px \'Roboto Condensed\';color:white'}">Real Estate CRM решает вопросы</h2><div class="problem-tabs">${content.problems.map((p,i)=>`<button data-problem="${i}" class="${problemIndex===i?'active':''}" aria-label="${esc(p.title)}" aria-pressed="${problemIndex===i}"></button>`).join('')}</div><div class="problem-detail"><h1>${esc(p.title)}</h1><div class="title-rule" style="background:white"></div><p>${esc(p.text)}</p></div><img class="problem-visual" src="${esc(p.image)}" alt="${esc(p.title)}">`;}
 function formHtml(){return `<div class="form-content"><h1>Хочу попробовать<br>Real Estate CRM в деле</h1><div class="title-rule"></div><form id="trialForm" class="trial-form"><label for="name">Как к вам обращаться?<input name="name" id="name" autocomplete="name" placeholder="Ваше имя" required minlength="2" value="${esc(formValues.name)}"></label><label class="sr-only" for="email">Электронная почта</label><input type="email" id="email" name="email" placeholder="Электронная почта" autocomplete="email" required value="${esc(formValues.email)}"><label for="phone"><span class="sr-only">Телефон для связи с вами</span><input type="tel" inputmode="tel" id="phone" name="phone" placeholder="Телефон для связи с вами" autocomplete="tel" required value="${esc(formValues.phone)}"><small>Только цифры, от 10 до 15</small></label><button class="submit-button" type="submit">ОТПРАВИТЬ</button></form><p class="form-policy">Регистрируясь, вы соглашаетесь с <a href="#legal-terms" data-legal="terms">Условиями использования</a> и <a href="#legal-privacy" data-legal="privacy">Политикой конфиденциальности</a></p><p class="form-note">Демонстрационная форма прототипа. Данные не отправляются.</p></div>`;}
