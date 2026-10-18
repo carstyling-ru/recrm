@@ -91,6 +91,7 @@ function sourceScreen(id){
  }
 
  if(id==='03'){
+  const intro=$$('p',root).find(n=>n.textContent.startsWith('Мы оцифровываем агентства недвижимости'));if(intro)intro.style.left=$('[data-name="H1"]',root).style.left;
   const cards=$$('[data-name^="feedback"]',root);const grid=document.createElement('div');grid.className='reviews-grid';
   for(const card of cards){card.style.position='relative';card.style.left='auto';card.style.top='auto';card.style.width='100%';grid.append(card);}root.append(grid);
  }
