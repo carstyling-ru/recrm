@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icn / map-marker" clip-path="url(#clip0_0_3990)">
+<path id="Vector" d="M46.1461 97.9824C17.7676 56.842 12.5 52.6197 12.5 37.5C12.5 16.7893 29.2893 0 50 0C70.7107 0 87.5 16.7893 87.5 37.5C87.5 52.6197 82.2324 56.842 53.8539 97.9824C51.9916 100.673 48.0082 100.672 46.1461 97.9824ZM50 53.125C58.6295 53.125 65.625 46.1295 65.625 37.5C65.625 28.8705 58.6295 21.875 50 21.875C41.3705 21.875 34.375 28.8705 34.375 37.5C34.375 46.1295 41.3705 53.125 50 53.125Z" fill="#568FE1"/>
+</g>
+<defs>
+<clipPath id="clip0_0_3990">
+<rect width="100" height="100" fill="white"/>
+</clipPath>
+</defs>
+</svg>

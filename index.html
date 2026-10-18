@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RECRM — Real Estate CRM</title>
+  <meta name="description" content="Облачная CRM для агентств недвижимости. Объекты, клиенты, реклама и сделки в одной системе.">
+  <meta name="theme-color" content="#368cfb">
+  <link rel="stylesheet" href="./fonts.css">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" type="module"></script>
+</head>
+<body>
+  <a class="skip-link" href="#screen">Перейти к содержимому</a>
+  <div class="backdrop" id="backdrop"></div>
+  <main id="screen" tabindex="-1" aria-label="Презентация RECRM"><div id="stage"></div></main>
+  <header class="header">
+    <a href="#recrm-01" class="brand" aria-label="RECRM — главная"><img src="./assets/e4ebd.svg" alt="" class="brand-mark"><span>Real Estate CRM</span></a>
+    <button class="trial" data-open-form>Попробуйте бесплатно</button>
+    <button class="close-form" id="closeForm" aria-label="Закрыть форму" hidden>×</button>
+  </header>
+  <aside class="rail"><button id="menuToggle" class="menu-toggle" aria-label="Открыть меню" aria-expanded="false" aria-controls="menu"><span class="hamburger"></span><span class="menu-word">МЕНЮ</span></button></aside>
+  <div class="menu-shade" id="menuShade" hidden></div>
+  <nav id="menu" class="menu" aria-label="Основная навигация" inert>
+    <div class="menu-links">
+      <a href="#recrm-01">ГЛАВНАЯ</a>
+      <a href="#recrm-21">КАК ЭТО РАБОТАЕТ?</a>
+      <a href="#recrm-31">СТОИМОСТЬ</a>
+      <a href="#recrm-10">КТО МЫ?</a>
+      <a href="#recrm-41">ПОЧЕМУ МЫ?</a>
+      <a href="#recrm-61">БЛОГ <span class="new-dot"></span></a>
+      <a href="#recrm-51">ПОДДЕРЖКА</a>
+    </div>
+    <div class="menu-actions"><a href="https://app.recrm.online/" target="_blank" rel="noopener">ВОЙТИ <span aria-hidden="true">↗</span></a><button data-open-form>ПОПРОБОВАТЬ БЕСПЛАТНО</button></div>
+  </nav>
+  <footer class="footer"><a class="phone" href="tel:+74997537723">+7 499 753 77 23</a><div class="screen-controls"><button id="prev" aria-label="Предыдущий экран">↑</button><button id="next" aria-label="Следующий экран"><span class="chevron"></span></button></div><button id="progress" class="progress" aria-label="Открыть список экранов"></button><button class="chat" id="chat" aria-label="Связаться с нами"><img src="./assets/77994.png" alt=""></button></footer>
+  <dialog id="contents" class="contents"><button class="dialog-close" aria-label="Закрыть список экранов">×</button><h2>Все экраны</h2><div id="contentsList"></div></dialog>
+  <dialog id="media" class="media"><button class="dialog-close" aria-label="Закрыть">×</button><div id="mediaContent"></div></dialog>
+  <div id="announcer" class="sr-only" aria-live="polite"></div>
+  <div id="loadError" class="load-error" hidden>Не удалось загрузить прототип. Обновите страницу.</div>
+</body>
+</html>
