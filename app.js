@@ -21,7 +21,8 @@ const definitions=[
  ['42','Отзывы наших клиентов','reviews'],
  ['43','География клиентов','geography'],
  ['51','Поддержка','support'],
- ['61','Полезные статьи','blog']
+ ['61','Полезные статьи','blog'],
+ ['form','Попробовать бесплатно','free-trial']
 ];
 const routes=[
  ...definitions,
@@ -328,8 +329,8 @@ function render(id,animate=true){
   stage.append(desktop);const mobile=document.createElement('div');mobile.className='mobile-layout';mobile.innerHTML=mobileHtml(id,desktop);stage.append(mobile);
  }
  if(animate&&!matchMedia('(prefers-reduced-motion:reduce)').matches){stage.classList.remove('stage-in-down','stage-in-up');void stage.offsetWidth;stage.classList.add(routes.findIndex(d=>d[0]===id)<routes.findIndex(d=>d[0]===last)?'stage-in-up':'stage-in-down');}
- const i=definitions.findIndex(d=>d[0]===id);$('#next').setAttribute('aria-label',i===definitions.length-1?'Вернуться на первый экран':'Следующий экран');
- const group=id==='10'?'10':id.startsWith('0')?'01':id[0]==='2'?'21':id==='31'?'31':id[0]==='4'?'41':id==='51'?'51':'61';
+ $('#next').setAttribute('aria-label','Следующий экран');
+ const group=id==='form'?'form':id==='10'?'10':id.startsWith('0')?'01':id[0]==='2'?'21':id==='31'?'31':id[0]==='4'?'41':id==='51'?'51':'61';
  $$('.menu-links a').forEach(a=>{const active=a.hash===routeHash(group);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
  const title=id==='form'?'Попробовать бесплатно':routes.find(d=>d[0]===id)[1];document.title=`${title} — RECRM`;$('#announcer').textContent=title;resize();wire();
 }
@@ -337,7 +338,7 @@ $$('.menu-links a,.menu-actions a').forEach(a=>a.addEventListener('click',()=>se
 document.addEventListener('pointerdown',e=>{if(current==='31'&&!e.target.closest('.pricing-card'))$$('.pricing-card.is-expanded',stage).forEach(card=>setPricingCard(card,false));});
 $('.skip-link').onclick=e=>{e.preventDefault();screen.focus();};
 $('#menuToggle').onclick=()=>setMenu(!menuOpen);$('#menuShade').onclick=()=>setMenu(false);
-$('#closeForm').onclick=()=>go(previous);$('#next').onclick=()=>{if(current===definitions.at(-1)[0])go('01');else move(1);};
+$('#closeForm').onclick=()=>go(previous);$('#next').onclick=()=>move(1);
 $('#chat').onclick=()=>openMedia('<h2>Свяжитесь с RECRM</h2><p>Поможем разобраться в возможностях CRM и начать работу.</p><p style="margin-top:24px"><a href="tel:+74997537723">+7 (499) 753-77-23</a><br><a href="mailto:support@recrm.online">support@recrm.online</a></p><p>Рабочие дни, с 9:00 до 17:00 по Москве.</p>');
 $$('.dialog-close').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 $('#media').addEventListener('close',()=>{$('#mediaContent').replaceChildren();restartProblemPlayback();});
@@ -350,8 +351,8 @@ document.addEventListener('keydown',e=>{
 });
 let wheelSum=0,wheelTime=0;
 addEventListener('wheel',e=>{
- if(menuOpen||current==='form'||current==='62'||$('dialog[open]')||e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;
- const scrollables='.mobile-layout,.case-list,.case-content,.article-text,.faq-list';
+ if(menuOpen||current==='62'||$('dialog[open]')||e.target.closest('input,textarea,select')||e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;
+ const scrollables='.mobile-layout,.form-content,.case-list,.case-content,.article-text,.faq-list';
  for(let scroller=e.target.closest(scrollables);scroller;scroller=scroller.parentElement?.closest(scrollables)){
   if(scroller.scrollHeight>scroller.clientHeight+3){const down=e.deltaY>0;if((down&&scroller.scrollTop+scroller.clientHeight<scroller.scrollHeight-3)||(!down&&scroller.scrollTop>3))return;}
  }
@@ -359,7 +360,7 @@ addEventListener('wheel',e=>{
 },{passive:false});
 let touchStart=null;
 screen.addEventListener('touchstart',e=>{touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY,target:e.target};},{passive:true});
-screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||current==='form'||current==='62')return;const dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;const scroller=touchStart.target.closest('.mobile-layout');if(scroller&&scroller.scrollHeight>scroller.clientHeight+3&&((dy<0&&scroller.scrollTop+scroller.clientHeight<scroller.scrollHeight-3)||(dy>0&&scroller.scrollTop>3)))return;if(Math.abs(dy)>65&&Math.abs(dy)>Math.abs(dx)*1.3)move(dy<0?1:-1);touchStart=null;},{passive:true});
+screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||current==='62'||touchStart.target.closest('input,textarea,select'))return;const dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;const scroller=touchStart.target.closest('.mobile-layout,.form-content');if(scroller&&scroller.scrollHeight>scroller.clientHeight+3&&((dy<0&&scroller.scrollTop+scroller.clientHeight<scroller.scrollHeight-3)||(dy>0&&scroller.scrollTop>3)))return;if(Math.abs(dy)>65&&Math.abs(dy)>Math.abs(dx)*1.3)move(dy<0?1:-1);touchStart=null;},{passive:true});
 addEventListener('resize',resize);addEventListener('hashchange',()=>syncRoute());
 document.addEventListener('visibilitychange',restartProblemPlayback);
 try{[screens,content]=await Promise.all(['./screens.json','./content.json?v=15'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}));syncRoute(false);}catch(error){console.error(error);$('#loadError').hidden=false;}
