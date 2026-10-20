@@ -26,6 +26,16 @@
 .features-visual .features-preview { left: 0 !important; top: 0 !important; }
 .features-visual .features-play { left: 638px !important; top: 459px !important; }
 .desktop-layout [data-name="07-APPS"] > [data-name="Phone"] { left: calc(50% + 219px) !important; }
+.capabilities-grid { position: absolute; top: 301px; left: 193px; right: 74px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; align-items: start; }
+.capabilities-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; font: 400 16px/20px Roboto, sans-serif; }
+.capabilities-list li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 8px; }
+.capability-marker { line-height: inherit; }
+.capability-text { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .mobile-layout .capabilities-grid { position: static; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .mobile-layout .capabilities-list { padding: 0; gap: 14px; font-size: 14px; line-height: 1.45; }
+  .mobile-layout .capabilities-list li { font-size: inherit; line-height: inherit; }
+}
 
 .problem-carousel { position: absolute; inset: 200px 70px 110px 217px; display: flex; flex-direction: column; color: white; touch-action: pan-y; }
 .problem-carousel > h2 { font: 900 48px/60px 'Roboto Condensed', sans-serif; }

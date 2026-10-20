@@ -148,6 +148,19 @@ function sourceScreen(id){
   visual.classList.add('features-visual');$('[data-name="slide-5 2"]',visual).classList.add('features-preview');play.classList.add('features-play');
   action(play,()=>showVideo('https://www.youtube.com/embed/iy-JT9-9Grw','Обзор RECRM'),'Смотреть видеообзор RECRM');
  }
+ if(id==='23'){
+  const section=$('[data-name="23-FEATURES"]',root),grid=document.createElement('div');grid.className='capabilities-grid';
+  const columns=[...section.children].filter(n=>n.style.width==='550px'&&n.style.fontSize==='16px').sort((a,b)=>Number(b.style.left.includes('-'))-Number(a.style.left.includes('-')));
+  for(const column of columns){
+   const list=document.createElement('ul');list.className='capabilities-list';
+   for(const p of $$('p',column))if(p.textContent.replaceAll('\u200b','').trim()){
+    const item=document.createElement('li');item.innerHTML=`<span class="capability-marker" aria-hidden="true">—</span><span class="capability-text">${p.innerHTML}</span>`;list.append(item);
+   }
+   grid.append(list);column.remove();
+  }
+  for(const child of [...section.children])if(child.style.fontSize==='0px')child.remove();
+  const title=$(':scope > p',section);title.setAttribute('role','heading');title.setAttribute('aria-level','1');section.append(grid);
+ }
  if(['03','08','10'].includes(id))setupSlider(root,id);
  if(id==='08')for(const p of $$('p',root))if(p.textContent.includes('Ознакомьтесь с подробным'))action(p,()=>openMedia(`<h2>Выгрузка объявлений на площадки</h2><p>Авито, Циан, Яндекс Недвижимость, Домклик, Юла, N1, МирКвартир и другие интернет-площадки.</p><p style="margin-top:20px"><a href="https://recrm.ru/" target="_blank" rel="noopener">Подробный список на сайте RECRM ↗</a></p>`));
  if(id==='07'){action($$('img',root).find(n=>n.src.includes('24533'))?.parentElement,()=>window.open('https://apps.apple.com/ru/app/recrm-app/id1448632364?l=ru&ls=1','_blank','noopener'));action($$('img',root).find(n=>n.src.includes('7bc21'))?.parentElement,()=>window.open('https://play.google.com/store/apps/details?id=com.recrm.online','_blank','noopener'));}
@@ -191,6 +204,7 @@ function mobileHtml(id,desktop){
  if(id==='02')return `<h1>Ключевые возможности нашего продукта</h1><div class="features-mobile-visual"><img src="./assets/70364.png" alt="Интерфейс RECRM"><button data-overview aria-label="Смотреть видеообзор RECRM"><img src="./assets/777e8.svg" alt=""></button></div>${featuresListHtml()}`;
  if(id==='05')return `<h1>Топ-3 проблемы, которые мы решаем</h1>${$('.challenges-grid',desktop).outerHTML}`;
  if(id==='09')return `<h1>Настройка и запуск «под ключ»</h1>${$('.support-cards-grid',desktop).outerHTML}`;
+ if(id==='23')return `<h1>Возможности Real Estate CRM</h1>${$('.capabilities-grid',desktop).outerHTML}`;
  if(id==='04'||id==='06'){
   const cards=$$('.feature-row',desktop).flatMap(row=>$$('.comparison-card',row).sort((a,b)=>Number(a.style.gridColumn)-Number(b.style.gridColumn)));
   const title=$$('[data-name="H1"] p',desktop).map(p=>{const copy=p.cloneNode(true);$$('br',copy).forEach(br=>br.replaceWith(' '));return copy.textContent.trim();}).join(' ');
