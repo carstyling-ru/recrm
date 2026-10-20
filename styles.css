@@ -25,6 +25,7 @@
 .features-visual { display: block !important; left: auto !important; right: -34px; width: 1200px; height: 960px; }
 .features-visual .features-preview { left: 0 !important; top: 0 !important; }
 .features-visual .features-play { left: 638px !important; top: 459px !important; }
+.desktop-layout [data-name="07-APPS"] > [data-name="Phone"] { left: calc(50% + 219px) !important; }
 
 @media (max-width: 760px) {
   .mobile-layout .features-list { gap: 16px; padding: 0; }
