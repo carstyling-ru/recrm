@@ -339,12 +339,11 @@ document.addEventListener('pointerdown',e=>{if(current==='31'&&!e.target.closest
 $('.skip-link').onclick=e=>{e.preventDefault();screen.focus();};
 $('#menuToggle').onclick=()=>setMenu(!menuOpen);$('#menuShade').onclick=()=>setMenu(false);
 $('#closeForm').onclick=()=>go(previous);$('#next').onclick=()=>move(1);
-$('#chat').onclick=()=>openMedia('<h2>Свяжитесь с RECRM</h2><p>Поможем разобраться в возможностях CRM и начать работу.</p><p style="margin-top:24px"><a href="tel:+74997537723">+7 (499) 753-77-23</a><br><a href="mailto:support@recrm.online">support@recrm.online</a></p><p>Рабочие дни, с 9:00 до 17:00 по Москве.</p>');
 $$('.dialog-close').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 $('#media').addEventListener('close',()=>{$('#mediaContent').replaceChildren();restartProblemPlayback();});
 $$('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close();}));
 document.addEventListener('keydown',e=>{
- if(e.key==='Escape'){if(menuOpen)setMenu(false);else if(current==='form')go(previous);return;}
+ if(e.key==='Escape'){if(e.target.tagName==='SELECT')return;if(menuOpen)setMenu(false);else if(current==='form')go(previous);return;}
  if(menuOpen&&e.key==='Tab'){const focus=[$('#menuToggle'),...$$('a,button',$('#menu'))];const first=focus[0],last=focus.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}return;}
  if(menuOpen||current==='62'||$('dialog[open]')||/INPUT|TEXTAREA|SELECT|SUMMARY/.test(e.target.tagName)||(e.key===' '&&e.target.closest('button,a,details')))return;
  if(['ArrowDown','PageDown',' '].includes(e.key)){e.preventDefault();move(1);}if(['ArrowUp','PageUp'].includes(e.key)){e.preventDefault();move(-1);}if(e.key==='Home'){e.preventDefault();go('01');}if(e.key==='End'){e.preventDefault();go(definitions.at(-1)[0]);}
