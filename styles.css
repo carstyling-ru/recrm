@@ -31,7 +31,13 @@
 .capabilities-list li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 8px; }
 .capability-marker { line-height: inherit; }
 .capability-text { min-width: 0; overflow-wrap: anywhere; }
+.case-copy { min-width: 0; }
+.case-copy p { margin: 0; line-height: 1.3; }
+.case-copy p + p { margin-top: 18px; }
+.case-list .case-content--text { display: block !important; }
+.case-content--text .case-copy { max-width: 1050px; }
 @media (max-width: 760px) {
+  .mobile-layout .case-copy p { line-height: 1.45; }
   .mobile-layout .capabilities-grid { position: static; grid-template-columns: minmax(0, 1fr); gap: 14px; }
   .mobile-layout .capabilities-list { padding: 0; gap: 14px; font-size: 14px; line-height: 1.45; }
   .mobile-layout .capabilities-list li { font-size: inherit; line-height: inherit; }
