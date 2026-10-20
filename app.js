@@ -235,15 +235,14 @@ function render(id,animate=true){
  current=id;if(menuOpen)setMenu(false);
  const blue=bluePages.has(id);document.body.classList.toggle('is-blue',blue);$('#backdrop').style.background=blue?'#368cfb':'white';
  document.body.dataset.screen=id;
- $('.trial').hidden=id==='form';$('#closeForm').hidden=id!=='form';$('.screen-controls').hidden=id==='form';$('#progress').hidden=id==='form';
+ $('.trial').hidden=id==='form';$('#closeForm').hidden=id!=='form';$('.screen-controls').hidden=id==='form';
  stage.innerHTML='';
  if(id==='form'){const wrapper=document.createElement('div');wrapper.innerHTML=formHtml();stage.append(wrapper);}else{
   let desktop;if(id==='22'){desktop=template(`<div class="design-screen desktop-layout" style="background:#368cfb">${problemHtml()}</div>`);}else if(screens[id]&&id!=='24')desktop=sourceScreen(id);else desktop=template(`<div class="design-screen desktop-layout"><section class="custom-screen ${blue?'blue':''}">${customHtml(id)}</section></div>`);
   stage.append(desktop);const mobile=document.createElement('div');mobile.className='mobile-layout';mobile.innerHTML=mobileHtml(id,desktop);stage.append(mobile);
  }
  if(animate&&!matchMedia('(prefers-reduced-motion:reduce)').matches){stage.classList.remove('stage-in-down','stage-in-up');void stage.offsetWidth;stage.classList.add(definitions.findIndex(d=>d[0]===id)<definitions.findIndex(d=>d[0]===last)?'stage-in-up':'stage-in-down');}
- const i=definitions.findIndex(d=>d[0]===id);$('#prev').disabled=i<=0;$('#next').setAttribute('aria-label',i===definitions.length-1?'Вернуться на первый экран':'Следующий экран');
- $('#progress').innerHTML=`${String(i+1).padStart(2,'0')} <span>/ ${definitions.length}</span>`;
+ const i=definitions.findIndex(d=>d[0]===id);$('#next').setAttribute('aria-label',i===definitions.length-1?'Вернуться на первый экран':'Следующий экран');
  const group=id==='10'?'10':id.startsWith('0')?'01':id[0]==='2'?'21':id==='31'?'31':id[0]==='4'?'41':id==='51'?'51':'61';
  $$('.menu-links a').forEach(a=>{const active=a.hash===routeHash(group);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
  const title=id==='form'?'Попробовать бесплатно':definitions[i][1];document.title=`${title} — RECRM`;$('#announcer').textContent=title;resize();wire();
@@ -251,14 +250,11 @@ function render(id,animate=true){
 $$('.menu-links a,.menu-actions a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
 $('.skip-link').onclick=e=>{e.preventDefault();screen.focus();};
 $('#menuToggle').onclick=()=>setMenu(!menuOpen);$('#menuShade').onclick=()=>setMenu(false);
-$('#closeForm').onclick=()=>go(previous);$('#prev').onclick=()=>move(-1);$('#next').onclick=()=>{if(current===definitions.at(-1)[0])go('01');else move(1);};
+$('#closeForm').onclick=()=>go(previous);$('#next').onclick=()=>{if(current===definitions.at(-1)[0])go('01');else move(1);};
 $('#chat').onclick=()=>openMedia('<h2>Свяжитесь с RECRM</h2><p>Поможем разобраться в возможностях CRM и начать работу.</p><p style="margin-top:24px"><a href="tel:+74997537723">+7 (499) 753-77-23</a><br><a href="mailto:support@recrm.online">support@recrm.online</a></p><p>Рабочие дни, с 9:00 до 17:00 по Москве.</p>');
-$('#progress').onclick=()=>$('#contents').showModal();
 $$('.dialog-close').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 $('#media').addEventListener('close',()=>$('#mediaContent').replaceChildren());
 $$('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close();}));
-$('#contentsList').className='contents-list';$('#contentsList').innerHTML=definitions.map(([id,title,slug])=>`<a href="#${slug}"><span>${id}</span>${esc(title)}</a>`).join('');
-$('#contentsList').onclick=e=>{if(e.target.closest('a'))$('#contents').close();};
 document.addEventListener('keydown',e=>{
  if(e.key==='Escape'){if(menuOpen)setMenu(false);else if(current==='form')go(previous);return;}
  if(menuOpen&&e.key==='Tab'){const focus=[$('#menuToggle'),...$$('a,button',$('#menu'))];const first=focus[0],last=focus.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}return;}
