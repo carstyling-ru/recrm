@@ -84,6 +84,10 @@ function sourceScreen(id){
   if(/^(Попробуйте|Попробовать) бесплатно$/.test(n.textContent.trim()))action(n,()=>go('form'));
  }
  const heading=$('[data-name="H1"] p',root)||$$('p',root).find(n=>n.style.fontSize==='72px');if(heading){heading.setAttribute('role','heading');heading.setAttribute('aria-level','1');}
+ if(['10','31'].includes(id)){
+  const prefix=id==='10'?'Site-Mechanics — это команда':'СТОИМОСТЬ НА ТАРИФАХ',intro=$$('p',root).find(p=>p.textContent.trim().startsWith(prefix));
+  intro.style.left=$('[data-name="H1"]',root).style.left;intro.classList.add('section-lead');
+ }
  if(id==='01'){
   root.classList.add('hero');
   const intro=$('[data-name="01-INTRO"]',root),title=$('[data-name="H1"] p',intro).cloneNode(true),description=$('[data-name="TITLE"] > p',intro).textContent;
@@ -238,6 +242,10 @@ function mobileHtml(id,desktop){
  if(['21','24','41','42','43','51','61','62'].includes(id))return customHtml(id);
  if(id==='22')return problemHtml(true);
  if(id==='31')return `<h1>Сколько это стоит?</h1><p>${esc(content.pricing.caption)}</p>${pricingHtml('mobile')}`;
+ if(id==='10'){
+  const title=$('[data-name="H1"] p',desktop).textContent,intro=$('.section-lead',desktop),description=$$('p',desktop).find(p=>p.textContent.startsWith('Нами разработано'));
+  return `<h1>${esc(title)}</h1><p class="section-lead">${esc(intro.textContent)}</p><img class="mobile-image" src="./assets/99c59.png" alt="Команда Site-Mechanics"><p>${esc(description.textContent)}</p>`;
+ }
  const mainImage={'07':'a900d.png','10':'99c59.png'}[id];
  const seen=new Set();const paragraphs=$$('p',desktop).map(n=>n.textContent.trim()).filter(t=>t&&t!=='​'&&!seen.has(t)&&seen.add(t));
  const title=paragraphs.shift()||definitions.find(d=>d[0]===id)?.[1];
