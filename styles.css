@@ -234,10 +234,9 @@
 .header-actions { display: flex; align-items: center; gap: 16px; }
 .language-switcher { position: relative; color: var(--blue); }
 .language-switcher::after { content: ''; position: absolute; right: 16px; top: 18px; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); pointer-events: none; }
-.language-switcher select { appearance: none; width: 146px; height: 46px; padding: 0 34px 0 16px; border: 1px solid currentColor; border-radius: 25px; background: transparent; color: inherit; font: 500 16px/1.2 Roboto, Arial, sans-serif; cursor: pointer; }
+.language-switcher select { appearance: none; width: 146px; height: 46px; padding: 0 34px 0 16px; border: 1px solid currentColor; border-radius: 25px; background: white; color: inherit; font: 500 16px/1.2 Roboto, Arial, sans-serif; cursor: pointer; }
 .language-switcher select:focus-visible { outline: 3px solid var(--green); outline-offset: 4px; }
 .language-switcher option { background: white; color: var(--ink); }
-.is-blue .language-switcher { color: white; }
 .footer-trial { margin-left: auto; white-space: nowrap; }
 @media (max-width: 760px) {
   .header-actions { gap: 10px; }
