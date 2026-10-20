@@ -94,9 +94,7 @@ function sourceScreen(id){
  }
  if(id==='31'){
   const cards=$$('div',root).filter(n=>n.style.height==='614px'&&n.style.width==='335px');
-  const grid=document.createElement('div');grid.className='pricing-grid';
-  for(const card of cards){card.style.position='relative';card.style.left='auto';card.style.top='auto';card.style.width='100%';grid.append(card);}
-  root.append(grid);
+  cards.forEach(card=>card.remove());root.append(template(pricingHtml('desktop')));
  }
 
  if(id==='03'){
@@ -193,6 +191,29 @@ function blogHtml(){const a=content.article;return `<h1>Полезные ста�
 function articleHtml(){const a=content.article;return `<h1 style="font-size:48px;line-height:1.1">${esc(a.title)}</h1><div class="article"><img src="${esc(a.image)}" alt="Иллюстрация мобильного приложения"><div class="article-text">${a.fullHtml||esc(a.fullText)}</div><a class="back-to-blog" href="#blog">← Все статьи</a></div>`;}
 function casesHtml(){return `<h1 style="font-size:48px">Бизнес-кейсы</h1><div class="case-list">${content.cases.map((c,i)=>`<details ${i===0?'open':''}><summary>${esc(c.title)}</summary><div class="case-content${c.image?'':' case-content--text'}">${c.image?`<img src="${esc(c.image)}" alt="${esc(c.title)}">`:""}<div class="case-copy">${c.text.split(/\n{2,}/).map(p=>`<p>${esc(p).replaceAll('\n','<br>')}</p>`).join('')}</div></div></details>`).join('')}</div>`;}
 function reviewsHtml(){return `<h1>Отзывы наших клиентов</h1><div class="title-rule"></div><div class="written-reviews">${[0,1,2].map(i=>{const r=content.reviews[i];return `<article>${r?.images[0]?`<img class="review-logo" src="${esc(r.images[0])}" alt="Логотип клиента">`:''}<div class="review-text">${esc(r?.text||'').replaceAll('\n\n','<br><br>')}</div>${r?.images.length?`<button class="review-original" data-letter="${i}">Посмотреть оригинал ↗</button>`:""}</article>`;}).join('')}</div>`;}
+function pricingHtml(layout){
+ return `<div class="pricing-grid">${content.pricing.plans.map(plan=>{
+  const panelId=`pricing-${layout}-${plan.id}`,summary=`<div class="pricing-summary"><strong>${esc(plan.price)}</strong><span>${esc(plan.unit)}</span></div>`;
+  return `<article class="pricing-card pricing-card--${plan.id}"><h2><button class="pricing-toggle" data-pricing-toggle aria-expanded="false" aria-controls="${panelId}" aria-label="Тариф «${esc(plan.name)}»: цены по количеству сотрудников">${esc(plan.name)}</button></h2><p class="pricing-subscription"><strong>${esc(plan.employees)}</strong><span>${esc(plan.subscription)}</span></p><div class="pricing-body"><div class="pricing-overview" data-pricing-overview><table class="pricing-table pricing-features"><caption class="sr-only">Возможности тарифа «${esc(plan.name)}»</caption><colgroup><col><col></colgroup><tbody>${content.pricing.featureLabels.map((label,i)=>`<tr><th scope="row">${esc(label)}</th><td>${plan.features[i]===true?`<span class="pricing-check" role="img" aria-label="Включено">✓</span>${plan.note&&i===3?'<sup>*</sup>':''}`:esc(plan.features[i]===false?'—':plan.features[i])}</td></tr>`).join('')}</tbody></table>${summary}${plan.note?`<small class="pricing-note">${esc(plan.note)}</small>`:''}</div><div class="pricing-details" data-pricing-details id="${panelId}" hidden>${summary}<table class="pricing-table pricing-tiers"><caption class="sr-only">Стоимость тарифа «${esc(plan.name)}» по количеству сотрудников</caption><colgroup><col><col></colgroup><tbody>${plan.tiers.map(([employees,price])=>`<tr><th scope="row">${esc(employees)}</th><td>${esc(price)}</td></tr>`).join('')}</tbody></table>${plan.note?`<small class="pricing-note">${esc(plan.note)}</small>`:''}<button class="pricing-cta" data-open-form>Попробовать бесплатно</button></div></div></article>`;
+ }).join('')}</div>`;
+}
+function setPricingCard(card,expanded){
+ for(const item of $$('.pricing-card',card.closest('.pricing-grid'))){
+  if(item!==card&&!expanded)continue;
+  const active=item===card&&expanded;item.classList.toggle('is-expanded',active);
+  $('[data-pricing-toggle]',item).setAttribute('aria-expanded',active);$('[data-pricing-overview]',item).hidden=active;$('[data-pricing-details]',item).hidden=!active;
+ }
+}
+function setupPricingCards(){
+ const hover=matchMedia('(hover:hover) and (pointer:fine)');
+ for(const card of $$('.pricing-card',stage)){
+  card.addEventListener('pointerenter',e=>{if(hover.matches&&e.pointerType!=='touch')setPricingCard(card,true);});
+  card.addEventListener('pointerleave',()=>{if(hover.matches&&!card.contains(document.activeElement))setPricingCard(card,false);});
+  card.addEventListener('click',e=>{if(e.target.closest('a,button,input,select')&&!e.target.closest('[data-pricing-toggle]'))return;setPricingCard(card,!card.classList.contains('is-expanded'));});
+  card.addEventListener('focusout',e=>{if(!card.contains(e.relatedTarget)&&!(hover.matches&&card.matches(':hover')))setPricingCard(card,false);});
+  card.addEventListener('keydown',e=>{if(e.key==='Escape'&&card.classList.contains('is-expanded')){e.preventDefault();e.stopPropagation();setPricingCard(card,false);$('[data-pricing-toggle]',card).focus({preventScroll:true});}});
+ }
+}
 function customHtml(id){
  if(id==='21')return `<h1>Зачем вам нужна CRM?</h1><div class="title-rule"></div><p class="lead">Автоматизация работы агентства недвижимости на основе Real Estate CRM</p>${content.why.paragraphs.map(p=>`<p>${esc(p)}</p>`).join('')}<div class="icon-features">${content.why.features.map(f=>`<div class="icon-feature"><img src="${esc(f.image)}" alt=""><span>${esc(f.text)}</span></div>`).join('')}</div><p>Наконец, риелтор может избавиться от рутины и посвятить свое время тому, чего за него не сделает ни одна программа — человеческому общению с клиентами.</p>`;
  if(id==='24')return casesHtml();
@@ -215,7 +236,7 @@ function mobileHtml(id,desktop){
  }
  if(['21','24','41','42','43','51','61','62'].includes(id))return customHtml(id);
  if(id==='22')return problemHtml(true);
- if(id==='31')return `<h1>Сколько это стоит?</h1><p>Стоимость зависит от количества сотрудников вашей компании.</p>${[['Старт','1–2 сотрудника','17 990 ₽ / полгода','За всю компанию',''],['Бизнес','от 3 сотрудников','от 4 990 ₽ / мес.','За всю компанию','featured'],['Премиум','от 30 сотрудников','от 345 ₽ / мес.','За 1 сотрудника','premium']].map(([name,count,price,unit,cls])=>`<section class="mobile-price-card ${cls}"><h2>${name}</h2><p>${count}</p><ul><li>Клиенты, сделки, объекты и заявки — любое количество</li><li>Рекламные каналы: ${name==='Старт'?'2':'любое количество'}</li><li>Техподдержка: ${name==='Премиум'?'service-desk':'help-desk'}</li></ul><strong class="price">${price}</strong><p>${unit}</p><button class="inline-button" data-open-form>Попробовать бесплатно</button></section>`).join('')}`;
+ if(id==='31')return `<h1>Сколько это стоит?</h1><p>${esc(content.pricing.caption)}</p>${pricingHtml('mobile')}`;
  const mainImage={'07':'a900d.png','10':'99c59.png'}[id];
  const seen=new Set();const paragraphs=$$('p',desktop).map(n=>n.textContent.trim()).filter(t=>t&&t!=='​'&&!seen.has(t)&&seen.add(t));
  const title=paragraphs.shift()||definitions.find(d=>d[0]===id)?.[1];
@@ -280,6 +301,7 @@ function wire(){
  $$('[data-office]',stage).forEach(n=>n.onclick=()=>{const v=content.offices[Number(n.dataset.office)];picture(v.image,v.title);});
  $$('[data-letter]',stage).forEach(n=>n.onclick=()=>{const r=content.reviews[Number(n.dataset.letter)];picture(r.images[r.images.length-1],'Отзыв клиента RECRM');});
  if(current==='22')setupProblemCarousel();
+ if(current==='31')setupPricingCards();
  $$('[data-overview]',stage).forEach(n=>n.onclick=()=>showVideo('https://www.youtube.com/embed/iy-JT9-9Grw','Обзор RECRM'));
  $$('.case-list details',stage).forEach(n=>n.addEventListener('toggle',()=>{if(n.open)$$('.case-list details',n.parentElement).forEach(s=>{if(s!==n)s.open=false;});}));
  const map=$('.map-slider',stage);if(map)map.oninput=()=>{$('.map-year',stage).textContent=map.value;};
@@ -312,6 +334,7 @@ function render(id,animate=true){
  const title=id==='form'?'Попробовать бесплатно':routes.find(d=>d[0]===id)[1];document.title=`${title} — RECRM`;$('#announcer').textContent=title;resize();wire();
 }
 $$('.menu-links a,.menu-actions a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+document.addEventListener('pointerdown',e=>{if(current==='31'&&!e.target.closest('.pricing-card'))$$('.pricing-card.is-expanded',stage).forEach(card=>setPricingCard(card,false));});
 $('.skip-link').onclick=e=>{e.preventDefault();screen.focus();};
 $('#menuToggle').onclick=()=>setMenu(!menuOpen);$('#menuShade').onclick=()=>setMenu(false);
 $('#closeForm').onclick=()=>go(previous);$('#next').onclick=()=>{if(current===definitions.at(-1)[0])go('01');else move(1);};
@@ -339,4 +362,4 @@ screen.addEventListener('touchstart',e=>{touchStart={x:e.touches[0].clientX,y:e.
 screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||current==='form'||current==='62')return;const dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;const scroller=touchStart.target.closest('.mobile-layout');if(scroller&&scroller.scrollHeight>scroller.clientHeight+3&&((dy<0&&scroller.scrollTop+scroller.clientHeight<scroller.scrollHeight-3)||(dy>0&&scroller.scrollTop>3)))return;if(Math.abs(dy)>65&&Math.abs(dy)>Math.abs(dx)*1.3)move(dy<0?1:-1);touchStart=null;},{passive:true});
 addEventListener('resize',resize);addEventListener('hashchange',()=>syncRoute());
 document.addEventListener('visibilitychange',restartProblemPlayback);
-try{[screens,content]=await Promise.all(['./screens.json','./content.json?v=13'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}));syncRoute(false);}catch(error){console.error(error);$('#loadError').hidden=false;}
+try{[screens,content]=await Promise.all(['./screens.json','./content.json?v=15'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}));syncRoute(false);}catch(error){console.error(error);$('#loadError').hidden=false;}
