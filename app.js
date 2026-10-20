@@ -35,6 +35,8 @@ const featureHighlights=[
 ];
 const bluePages=new Set(['01','03','05','07','22','41','43','form']);
 let screens={},content={},current='01',previous='01',navigationLocked=false,menuOpen=false,problemIndex=0;
+const problemDelay=5000;
+let problemTimer=0,problemPaused=matchMedia('(prefers-reduced-motion:reduce)').matches,problemFocusPaused=false;
 let formValues={name:'',email:'',phone:''};
 const stage=$('#stage'),screen=$('#screen');
 const template=s=>{const t=document.createElement('template');t.innerHTML=s;return t.content.firstElementChild;};
@@ -65,8 +67,9 @@ function move(delta){if(current==='form'||menuOpen||$('dialog[open]'))return;con
 function setMenu(open){
  menuOpen=open;document.body.classList.toggle('menu-open',open);$('#menu').inert=!open;$('#menuToggle').setAttribute('aria-expanded',open);$('#menuToggle').setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');$('#menuShade').hidden=!open;
  if(open){screen.inert=true;$('.menu-links a').focus({preventScroll:true});}else{screen.inert=false;$('#menuToggle').focus({preventScroll:true});}
+ restartProblemPlayback();
 }
-function openMedia(html){$('#mediaContent').innerHTML=html;$('#media').showModal();}
+function openMedia(html){$('#mediaContent').innerHTML=html;$('#media').showModal();restartProblemPlayback();}
 function showVideo(url,title){openMedia(`<h2>${esc(title)}</h2><iframe src="${esc(url)}?rel=0" title="${esc(title)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`);}
 function picture(src,title){openMedia(`<h2>${esc(title)}</h2><img src="${esc(src)}" alt="${esc(title)}">`);}
 function sourceScreen(id){
@@ -205,7 +208,50 @@ function mobileHtml(id,desktop){
  if(id==='08')return `<h1>Выгрузка на площадки</h1><p>Автоматизированная отправка объявлений на профильные интернет-площадки экономит рабочее время сотрудников агентства.</p><div class="mobile-logos">${['c6ebe.svg','7de75.svg','c463d.svg','e6077.svg','2966d.png'].map(s=>`<img src="./assets/${s}" alt="Рекламная площадка">`).join('')}</div>`;
  return `<h1>${esc(title)}</h1>${mainImage?`<img class="mobile-image" src="./assets/${mainImage}" alt="Интерфейс RECRM">`:''}${paragraphs.map(t=>`<p style="margin-bottom:16px">${esc(t)}</p>`).join('')}`;
 }
-function problemHtml(mobile=false){const p=content.problems[problemIndex];return `<h2 style="${mobile?'':'position:absolute;left:217px;top:200px;font:900 48px/70px \'Roboto Condensed\';color:white'}">Real Estate CRM решает вопросы</h2><div class="problem-tabs">${content.problems.map((p,i)=>`<button data-problem="${i}" class="${problemIndex===i?'active':''}" aria-label="${esc(p.title)}" aria-pressed="${problemIndex===i}"></button>`).join('')}</div><div class="problem-detail"><h1>${esc(p.title)}</h1><div class="title-rule" style="background:white"></div><p>${esc(p.text)}</p></div><img class="problem-visual" src="${esc(p.image)}" alt="${esc(p.title)}">`;}
+function problemHtml(mobile=false){
+ const prefix=mobile?'problem-mobile':'problem-desktop';
+ return `<section class="problem-carousel" role="region" aria-roledescription="карусель" aria-label="Real Estate CRM решает вопросы"><h2>Real Estate CRM решает вопросы</h2><div class="problem-controls"><div class="problem-tabs" role="group" aria-label="Выбрать слайд">${content.problems.map((p,i)=>`<button data-problem="${i}" class="${problemIndex===i?'active':''}" aria-label="${esc(p.title)}" aria-controls="${prefix}-${i}" aria-pressed="${problemIndex===i}"></button>`).join('')}</div><button class="problem-toggle" data-problem-toggle aria-label="${problemPaused?'Включить автоматическую смену слайдов':'Приостановить смену слайдов'}" aria-pressed="${problemPaused}"><span aria-hidden="true">${problemPaused?'▶':'Ⅱ'}</span></button></div><div class="problem-slides" aria-live="off">${content.problems.map((p,i)=>`<article class="problem-slide" id="${prefix}-${i}" data-problem-slide="${i}" role="group" aria-roledescription="слайд" aria-label="${i+1} из ${content.problems.length}" ${problemIndex===i?'':'hidden inert'}><div class="problem-copy"><h1>${esc(p.title)}</h1><div class="title-rule"></div><p>${esc(p.text)}</p></div><img class="problem-visual" src="${esc(p.image)}" alt="${esc(p.title)}" draggable="false"></article>`).join('')}</div><span class="problem-status sr-only" role="status"></span></section>`;
+}
+function restartProblemPlayback(){
+ clearTimeout(problemTimer);problemTimer=0;
+ const carousels=$$('.problem-carousel',stage),playing=current==='22'&&!problemPaused&&!problemFocusPaused&&!menuOpen&&!document.hidden&&!$('dialog[open]');
+ for(const carousel of carousels){
+  carousel.classList.remove('is-playing');
+  const toggle=$('[data-problem-toggle]',carousel);toggle.setAttribute('aria-pressed',problemPaused);toggle.setAttribute('aria-label',problemPaused?'Включить автоматическую смену слайдов':'Приостановить смену слайдов');toggle.firstElementChild.textContent=problemPaused?'▶':'Ⅱ';
+  if(playing){void carousel.offsetWidth;carousel.classList.add('is-playing');}
+ }
+ if(playing&&carousels.length)problemTimer=setTimeout(()=>setProblem(problemIndex+1,false),problemDelay);
+}
+function setProblem(index,announce=true){
+ const changed=problemIndex!==(index+content.problems.length)%content.problems.length;
+ problemIndex=(index+content.problems.length)%content.problems.length;
+ for(const carousel of $$('.problem-carousel',stage)){
+  for(const panel of $$('[data-problem-slide]',carousel)){
+   const active=Number(panel.dataset.problemSlide)===problemIndex;panel.hidden=!active;panel.inert=!active;panel.classList.remove('problem-enter');
+   if(active&&changed){void panel.offsetWidth;panel.classList.add('problem-enter');}
+  }
+  for(const tab of $$('[data-problem]',carousel)){const active=Number(tab.dataset.problem)===problemIndex;tab.classList.toggle('active',active);tab.setAttribute('aria-pressed',active);}
+  $('.problem-status',carousel).textContent=announce?content.problems[problemIndex].title:'';
+ }
+ restartProblemPlayback();
+}
+function setupProblemCarousel(){
+ for(const carousel of $$('.problem-carousel',stage)){
+  $$('[data-problem]',carousel).forEach(tab=>tab.onclick=()=>setProblem(Number(tab.dataset.problem)));
+  $('[data-problem-toggle]',carousel).onclick=()=>{problemPaused=!problemPaused;problemFocusPaused=false;restartProblemPlayback();};
+  carousel.addEventListener('focusin',e=>{if(!e.target.closest('[data-problem-toggle]')){problemFocusPaused=true;restartProblemPlayback();}});
+  carousel.addEventListener('focusout',e=>{if(!carousel.contains(e.relatedTarget)){problemFocusPaused=false;restartProblemPlayback();}});
+  carousel.addEventListener('keydown',e=>{
+   if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;
+   e.preventDefault();e.stopPropagation();setProblem(e.key==='Home'?0:e.key==='End'?content.problems.length-1:problemIndex+(e.key==='ArrowRight'?1:-1));
+  });
+  let start=null;
+  carousel.addEventListener('pointerdown',e=>{if(e.isPrimary&&e.button===0&&!e.target.closest('button,a,input'))start={x:e.clientX,y:e.clientY};});
+  carousel.addEventListener('pointercancel',()=>{start=null;});
+  carousel.addEventListener('pointerup',e=>{if(!start)return;const dx=e.clientX-start.x,dy=e.clientY-start.y;start=null;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3)setProblem(problemIndex+(dx<0?1:-1));});
+ }
+ restartProblemPlayback();
+}
 function formHtml(){return `<div class="form-content"><h1>Хочу попробовать<br>Real Estate CRM в деле</h1><div class="title-rule"></div><form id="trialForm" class="trial-form"><label for="name">Как к вам обращаться?<input name="name" id="name" autocomplete="name" placeholder="Ваше имя" required minlength="2" value="${esc(formValues.name)}"></label><label class="sr-only" for="email">Электронная почта</label><input type="email" id="email" name="email" placeholder="Электронная почта" autocomplete="email" required value="${esc(formValues.email)}"><label for="phone"><span class="sr-only">Телефон для связи с вами</span><input type="tel" inputmode="tel" id="phone" name="phone" placeholder="Телефон для связи с вами" autocomplete="tel" required value="${esc(formValues.phone)}"><small>Только цифры, от 10 до 15</small></label><button class="submit-button" type="submit">ОТПРАВИТЬ</button></form><p class="form-policy">Регистрируясь, вы соглашаетесь с <a href="#legal-terms" data-legal="terms">Условиями использования</a> и <a href="#legal-privacy" data-legal="privacy">Политикой конфиденциальности</a></p><p class="form-note">Демонстрационная форма прототипа. Данные не отправляются.</p></div>`;}
 function wire(){
  $$('[data-support-link]',stage).forEach(n=>action(n,()=>go('51')));
@@ -216,7 +262,7 @@ function wire(){
  $$('[data-video]',stage).forEach(n=>n.onclick=()=>{const v=content.videos[Number(n.dataset.video)];showVideo(v.url,v.title);});
  $$('[data-office]',stage).forEach(n=>n.onclick=()=>{const v=content.offices[Number(n.dataset.office)];picture(v.image,v.title);});
  $$('[data-letter]',stage).forEach(n=>n.onclick=()=>{const r=content.reviews[Number(n.dataset.letter)];picture(r.images[r.images.length-1],'Отзыв клиента RECRM');});
- $$('[data-problem]',stage).forEach(n=>n.onclick=()=>{problemIndex=Number(n.dataset.problem);render('22',false);});
+ if(current==='22')setupProblemCarousel();
  $$('[data-overview]',stage).forEach(n=>n.onclick=()=>showVideo('https://www.youtube.com/embed/iy-JT9-9Grw','Обзор RECRM'));
  $$('.case-list details',stage).forEach(n=>n.addEventListener('toggle',()=>{if(n.open)$$('.case-list details',n.parentElement).forEach(s=>{if(s!==n)s.open=false;});}));
  const map=$('.map-slider',stage);if(map)map.oninput=()=>{$('.map-year',stage).textContent=map.value;};
@@ -226,6 +272,7 @@ function wire(){
  }
 }
 function render(id,animate=true){
+ clearTimeout(problemTimer);problemTimer=0;problemFocusPaused=false;
  if(!definitions.some(d=>d[0]===id)&&id!=='form')id='01';
  $$('#screen > .transition-out').forEach(n=>n.remove());
  const last=current;
@@ -253,7 +300,7 @@ $('#menuToggle').onclick=()=>setMenu(!menuOpen);$('#menuShade').onclick=()=>setM
 $('#closeForm').onclick=()=>go(previous);$('#next').onclick=()=>{if(current===definitions.at(-1)[0])go('01');else move(1);};
 $('#chat').onclick=()=>openMedia('<h2>Свяжитесь с RECRM</h2><p>Поможем разобраться в возможностях CRM и начать работу.</p><p style="margin-top:24px"><a href="tel:+74997537723">+7 (499) 753-77-23</a><br><a href="mailto:support@recrm.online">support@recrm.online</a></p><p>Рабочие дни, с 9:00 до 17:00 по Москве.</p>');
 $$('.dialog-close').forEach(b=>b.onclick=()=>b.closest('dialog').close());
-$('#media').addEventListener('close',()=>$('#mediaContent').replaceChildren());
+$('#media').addEventListener('close',()=>{$('#mediaContent').replaceChildren();restartProblemPlayback();});
 $$('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close();}));
 document.addEventListener('keydown',e=>{
  if(e.key==='Escape'){if(menuOpen)setMenu(false);else if(current==='form')go(previous);return;}
@@ -272,4 +319,5 @@ let touchStart=null;
 screen.addEventListener('touchstart',e=>{touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY,target:e.target};},{passive:true});
 screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||current==='form')return;const dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;const scroller=touchStart.target.closest('.mobile-layout');if(scroller&&scroller.scrollHeight>scroller.clientHeight+3&&((dy<0&&scroller.scrollTop+scroller.clientHeight<scroller.scrollHeight-3)||(dy>0&&scroller.scrollTop>3)))return;if(Math.abs(dy)>65&&Math.abs(dy)>Math.abs(dx)*1.3)move(dy<0?1:-1);touchStart=null;},{passive:true});
 addEventListener('resize',resize);addEventListener('hashchange',()=>syncRoute());
+document.addEventListener('visibilitychange',restartProblemPlayback);
 try{[screens,content]=await Promise.all(['./screens.json','./content.json'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}));syncRoute(false);}catch(error){console.error(error);$('#loadError').hidden=false;}
