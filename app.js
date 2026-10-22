@@ -1,3 +1,4 @@
+import {createLocalization} from './i18n.js?v=22';
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -39,6 +40,7 @@ const featureHighlights=[
 ];
 const bluePages=new Set(['01','03','05','07','22','41','43','form']);
 let screens={},content={},current='01',previous='01',navigationLocked=false,menuOpen=false,problemIndex=0;
+let i18n={apply(){},text(value){return value;}};
 const problemDelay=5000;
 let problemTimer=0,problemPaused=matchMedia('(prefers-reduced-motion:reduce)').matches,problemFocusPaused=false;
 let formValues={name:'',email:'',phone:''};
@@ -72,8 +74,9 @@ function setMenu(open){
  menuOpen=open;document.body.classList.toggle('menu-open',open);$('#menu').inert=!open;$('#menuToggle').setAttribute('aria-expanded',open);$('#menuToggle').setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');$('#menuShade').hidden=!open;
  if(open){screen.inert=true;$('.menu-links a').focus({preventScroll:true});}else{screen.inert=false;$('#menuToggle').focus({preventScroll:true});}
  restartProblemPlayback();
+ i18n.apply($('#menuToggle'));
 }
-function openMedia(html){$('#mediaContent').innerHTML=html;$('#media').showModal();restartProblemPlayback();}
+function openMedia(html){$('#mediaContent').innerHTML=html;i18n.apply($('#media'));$('#media').showModal();restartProblemPlayback();}
 function showVideo(url,title){openMedia(`<h2>${esc(title)}</h2><iframe src="${esc(url)}?rel=0" title="${esc(title)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`);}
 function picture(src,title){openMedia(`<h2>${esc(title)}</h2><img src="${esc(src)}" alt="${esc(title)}">`);}
 function sourceScreen(id){
@@ -182,7 +185,7 @@ function setupSlider(root,id){
  root.append(slider);
  if(id==='03'){
   const cards=$$('[data-name^="feedback"]',root);const originals=cards.map(n=>n.innerHTML);
-  slider.addEventListener('input',()=>cards.forEach((n,i)=>n.innerHTML=originals[(i+Number(slider.value))%originals.length]));
+  slider.addEventListener('input',()=>{cards.forEach((n,i)=>n.innerHTML=originals[(i+Number(slider.value))%originals.length]);i18n.apply(root);});
  }else{
   const candidates=id==='10'?$$('img',root).filter(n=>/99c59|5c8ef/.test(n.src)).map(n=>n.parentElement):[$('[data-name="LOGOS"]',root)||$('[data-name="Logos"]',root)||$$('div',root).find(n=>n.style.gap==='100px')].filter(Boolean);
   slider.addEventListener('input',()=>candidates.forEach(n=>{n.style.translate=`${-Number(slider.value)*4}px 0`;}));
@@ -194,7 +197,7 @@ const faqTitles=['Вопросы по настройке системы','Воп
 function supportHtml(){return `<h1>Поддержка</h1><div class="title-rule"></div><p>Не нашли ответ? Свяжитесь с нами</p><div class="support-grid"><div class="support-contact"><p>Вы можете <a href="https://t.me/recrmtechsupport_bot" target="_blank" rel="noopener">написать нам в Telegram</a> или позвонить по тел. <a href="tel:+74997537723">+7 (499) 753-77-23</a> с 9.00 до 17.00 по Москве в рабочие дни.</p><p>Электронные письма отправляйте в любое время на адрес: <a href="mailto:support@recrm.online">support@recrm.online</a></p></div><aside><h3>Полезно посмотреть</h3><a href="https://www.youtube.com/playlist?list=PLAs1mEzxDu2OVJimbjaamUuvv_17ABhPr" target="_blank" rel="noopener">Обучающие видеоролики по использованию ReCRM</a><a href="https://recrm.ru/support/" target="_blank" rel="noopener">Руководство пользователя CRM</a><a href="http://docs.google.com/document/d/1jMP1yBEX3UG6_LHVKTegBipkyP1CVAZh/" target="_blank" rel="noopener">Документация по API</a></aside></div><h3 style="margin-top:35px">Ответы на часто задаваемые вопросы</h3><div class="faq-list">${content.faq.map((g,i)=>`<button class="faq-link" data-faq="${i}">${esc(g.title)}</button>`).join('')}</div>`;}
 function blogHtml(){
  const a=content.article;
- return `<h1>Полезные статьи для риэлторов</h1><div class="title-rule"></div><div class="blog-layout"><aside class="blog-sidebar"><h2>Новости продукта</h2>${[['Первая версия RECRM теперь работает по защищенному протоколу https','11 АПРЕЛЯ 2024'],['До 18 марта скидка 50% частным риэлторам','12 МАРТА 2024'],['Теперь RECRM можно установить как полноценное приложение на компьютер','15 ЯНВАРЯ 2024']].map(([t,d])=>`<a href="https://recrm.ru/blog/" target="_blank" rel="noopener"><span>${t}</span><small>${d}</small></a>`).join('')}</aside><article class="blog-card"><a href="#mobile-crm-guide"><img src="${esc(a.image)}" alt="Главное мобильное приложение риэлтора"></a><div><h2><a href="#mobile-crm-guide">${esc(a.title)}</a></h2><p>${esc(a.text)}</p><time>5 МАРТА 2024</time></div></article></div>`;
+ return `<h1>Полезные статьи для риэлторов</h1><div class="title-rule"></div><div class="blog-layout"><aside class="blog-sidebar"><h2>Новости продукта</h2>${[['Первая версия RECRM теперь работает по защищенному протоколу https','2024-04-11'],['До 18 марта скидка 50% частным риэлторам','2024-03-12'],['Теперь RECRM можно установить как полноценное приложение на компьютер','2024-01-15']].map(([t,d])=>`<a href="https://recrm.ru/blog/" target="_blank" rel="noopener"><span>${t}</span><time datetime="${d}" data-i18n-date="${d}"></time></a>`).join('')}</aside><article class="blog-card"><a href="#mobile-crm-guide"><img src="${esc(a.image)}" alt="Главное мобильное приложение риэлтора"></a><div><h2><a href="#mobile-crm-guide">${esc(a.title)}</a></h2><p>${esc(a.text)}</p><time datetime="2024-03-05" data-i18n-date="2024-03-05"></time></div></article></div>`;
 }
 function articleHtml(){const a=content.article;return `<h1 style="font-size:48px;line-height:1.1">${esc(a.title)}</h1><div class="article"><img src="${esc(a.image)}" alt="Иллюстрация мобильного приложения"><div class="article-text">${a.fullHtml||esc(a.fullText)}</div><a class="back-to-blog" href="#blog">← Все статьи</a></div>`;}
 function casesHtml(){return `<h1 style="font-size:48px">Бизнес-кейсы</h1><div class="case-list">${content.cases.map((c,i)=>`<details ${i===0?'open':''}><summary>${esc(c.title)}</summary><div class="case-content${c.image?'':' case-content--text'}">${c.image?`<img src="${esc(c.image)}" alt="${esc(c.title)}">`:""}<div class="case-copy">${c.text.split(/\n{2,}/).map(p=>`<p>${esc(p).replaceAll('\n','<br>')}</p>`).join('')}</div></div></details>`).join('')}</div>`;}
@@ -271,6 +274,7 @@ function restartProblemPlayback(){
   if(playing){void carousel.offsetWidth;carousel.classList.add('is-playing');}
  }
  if(playing&&carousels.length)problemTimer=setTimeout(()=>setProblem(problemIndex+1,false),problemDelay);
+ if(carousels.length)i18n.apply(stage);
 }
 function setProblem(index,announce=true){
  const changed=problemIndex!==(index+content.problems.length)%content.problems.length;
@@ -318,8 +322,8 @@ function wire(){
  $$('.case-list details',stage).forEach(n=>n.addEventListener('toggle',()=>{if(n.open)$$('.case-list details',n.parentElement).forEach(s=>{if(s!==n)s.open=false;});}));
  const map=$('.map-slider',stage);if(map)map.oninput=()=>{$('.map-year',stage).textContent=map.value;};
  const form=$('#trialForm');if(form){
-  form.oninput=()=>{formValues=Object.fromEntries(new FormData(form));const phone=$('#phone');phone.setCustomValidity('');};
-  form.onsubmit=e=>{e.preventDefault();const phone=$('#phone'),digits=phone.value.replace(/\D/g,'');if(digits.length<10||digits.length>15||!/^[+0-9 ()-]+$/.test(phone.value)){phone.setCustomValidity('Укажите номер телефона: от 10 до 15 цифр');phone.reportValidity();return;}const el=$('.form-content');el.innerHTML=`<h1>Спасибо, ${esc(formValues.name)}!</h1><div class="title-rule"></div><div class="form-success" role="status"><h2>Форма заполнена</h2><p>Это демонстрация отправки заявки. Данные остались только в открытой вкладке и не передавались на сервер.</p><p>Для получения демо-доступа напишите <a href="mailto:sales@recrm.ru">sales@recrm.ru</a>.</p><button class="submit-button" id="backFromSuccess">Вернуться к сайту</button></div>`;$('#backFromSuccess').onclick=()=>go(previous);};
+  form.oninput=()=>{formValues=Object.fromEntries(new FormData(form));$$('input',form).forEach(input=>input.setCustomValidity(''));};
+  form.onsubmit=e=>{e.preventDefault();const phone=$('#phone'),digits=phone.value.replace(/\D/g,'');if(digits.length<10||digits.length>15||!/^[+0-9 ()-]+$/.test(phone.value)){phone.setCustomValidity(i18n.text('Укажите номер телефона: от 10 до 15 цифр'));phone.reportValidity();return;}const el=$('.form-content');el.innerHTML=`<h1>Спасибо, <span data-i18n-ignore>${esc(formValues.name)}</span>!</h1><div class="title-rule"></div><div class="form-success" role="status"><h2>Форма заполнена</h2><p>Это демонстрация отправки заявки. Данные остались только в открытой вкладке и не передавались на сервер.</p><p>Для получения демо-доступа напишите <a href="mailto:sales@recrm.ru">sales@recrm.ru</a>.</p><button class="submit-button" id="backFromSuccess">Вернуться к сайту</button></div>`;$('#backFromSuccess').onclick=()=>go(previous);i18n.apply(el);};
  }
 }
 function render(id,animate=true){
@@ -343,8 +347,18 @@ function render(id,animate=true){
  $('#next').setAttribute('aria-label','Следующий экран');
  const group=id==='form'?'form':id==='10'?'10':id.startsWith('0')?'01':id[0]==='2'?'21':id==='31'?'31':id[0]==='4'?'41':id==='51'?'51':'61';
  $$('.menu-links a').forEach(a=>{const active=a.hash===routeHash(group);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
- const title=id==='form'?'Попробовать бесплатно':routes.find(d=>d[0]===id)[1];document.title=`${title} — RECRM`;$('#announcer').textContent=title;resize();wire();
+ const title=id==='form'?'Попробовать бесплатно':routes.find(d=>d[0]===id)[1];document.title=`${title} — RECRM`;$('#announcer').textContent=title;resize();wire();i18n.apply();
 }
+function fieldError(input){
+ const validity=input.validity;
+ if(validity.valueMissing)return {name:'Введите ваше имя.',email:'Введите адрес электронной почты.',phone:'Введите номер телефона.'}[input.name]||'';
+ if(input.name==='name'&&input.value.trim().length<2)return 'Имя должно содержать не менее 2 символов.';
+ if(input.name==='email'&&validity.typeMismatch)return 'Укажите корректный адрес электронной почты.';
+ if(input.name==='phone'&&(input.value.replace(/\D/g,'').length<10||input.value.replace(/\D/g,'').length>15||!/^[+0-9 ()-]+$/.test(input.value)))return 'Укажите номер телефона: от 10 до 15 цифр';
+ return '';
+}
+document.addEventListener('invalid',e=>{if(e.target.closest('#trialForm')){e.target.setCustomValidity('');e.target.setCustomValidity(i18n.text(fieldError(e.target)));}},true);
+document.addEventListener('recrm:locale-change',()=>{$$('#trialForm input').forEach(input=>{if(input.validity.customError){input.setCustomValidity('');input.setCustomValidity(i18n.text(fieldError(input)));}});});
 $$('.menu-links a,.menu-actions a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
 document.addEventListener('pointerdown',e=>{if(current==='31'&&!e.target.closest('.pricing-card'))$$('.pricing-card.is-expanded',stage).forEach(card=>setPricingCard(card,false));});
 $('.skip-link').onclick=e=>{e.preventDefault();screen.focus();};
@@ -373,4 +387,5 @@ screen.addEventListener('touchstart',e=>{touchStart={x:e.touches[0].clientX,y:e.
 screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||current==='62'||touchStart.target.closest('input,textarea,select'))return;const dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;const scroller=touchStart.target.closest('.mobile-layout,.form-content');if(scroller&&scroller.scrollHeight>scroller.clientHeight+3&&((dy<0&&scroller.scrollTop+scroller.clientHeight<scroller.scrollHeight-3)||(dy>0&&scroller.scrollTop>3)))return;if(Math.abs(dy)>65&&Math.abs(dy)>Math.abs(dx)*1.3)move(dy<0?1:-1);touchStart=null;},{passive:true});
 addEventListener('resize',resize);addEventListener('hashchange',()=>syncRoute());
 document.addEventListener('visibilitychange',restartProblemPlayback);
-try{[screens,content]=await Promise.all(['./screens.json','./content.json?v=15'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}));syncRoute(false);}catch(error){console.error(error);$('#loadError').hidden=false;}
+const localizationReady=createLocalization().then(instance=>{i18n=instance;window.recrmI18n=instance;});
+try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=15'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}

@@ -1,4 +1,13 @@
 @font-face {
+  font-family: 'Noto Sans Georgian';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-display: swap;
+  src: url(./assets/font-noto-sans-georgian.ttf) format('truetype');
+}
+
+@font-face {
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 300;
