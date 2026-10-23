@@ -25,6 +25,8 @@ const definitions=[
  ['61','Полезные статьи','blog'],
  ['form','Попробовать бесплатно','free-trial']
 ];
+// Remove a slug from this set to restore the screen to sequential navigation.
+const sequenceExcluded=new Set(['advertising','customers','geography','support']);
 const routes=[
  ...definitions,
  ['62','Главное мобильное приложение риэлтора','mobile-crm-guide']
@@ -69,7 +71,12 @@ function syncRoute(animate=true){
  render(id,animate);
  if(location.hash!==routeHash(current))history.replaceState(null,'',routeHash(current));
 }
-function move(delta){const i=definitions.findIndex(d=>d[0]===current);if(i<0||menuOpen||$('dialog[open]'))return;const next=Math.max(0,Math.min(definitions.length-1,i+delta));if(next!==i)go(definitions[next][0]);}
+function move(delta){
+ const i=definitions.findIndex(d=>d[0]===current);if(i<0||menuOpen||$('dialog[open]'))return;
+ for(let next=i+delta;next>=0&&next<definitions.length;next+=delta){
+  if(!sequenceExcluded.has(definitions[next][2])){go(definitions[next][0]);return;}
+ }
+}
 function setMenu(open){
  menuOpen=open;document.body.classList.toggle('menu-open',open);$('#menu').inert=!open;$('#menuToggle').setAttribute('aria-expanded',open);$('#menuToggle').setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');$('#menuShade').hidden=!open;
  if(open){screen.inert=true;$('.menu-links a').focus({preventScroll:true});}else{screen.inert=false;$('#menuToggle').focus({preventScroll:true});}
