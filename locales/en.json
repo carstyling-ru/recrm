@@ -59,8 +59,8 @@
     "md3a227574ca7": "Client reviews",
     "m9d3fdeac7465": "Client logo",
     "mabbedea7d06a": "Advantages over general-purpose CRMs",
-    "ma4fe196cdbc5": "Unlike general-purpose",
-    "m496b764080de": "amoCRM and Bitrix24, we offer",
+    "ma4fe196cdbc5": "Unlike general-purpose CRMs,",
+    "m496b764080de": "we offer",
     "m9d290d5a5dd7": "Automatic matching",
     "m43ee1e7f141c": "Two-room apartment request — Matches",
     "ma28d2cb458df": "More",
@@ -78,7 +78,7 @@
     "m14e34ba684e2": "website;",
     "mceb68a9287da": "Send",
     "m22b89aa3bcf2": "Property 54321 — Office /",
-    "mb3a4941dbd89": "154.2 m² / 60 Gogol Street /",
+    "mb3a4941dbd89": "154.2 m² / 60 High St /",
     "m27b1036deb58": "Automatically create and send clients",
     "m4cab3cb079f7": "presentations",
     "m97efeee5eaa0": "with suitable properties, to",
@@ -92,7 +92,7 @@
     "maf0842be1d9f": "the agency's internal database and a wide range of",
     "mcf0dd3b965ea": "online listings. Visual search within an",
     "m83adf51d265a": "area on the map;",
-    "mad8624e5e639": "Unlike general-purpose amoCRM and Bitrix24, we offer",
+    "mad8624e5e639": "Unlike general-purpose CRMs, we offer",
     "ma7f21838057e": "property listings on classified sites and your company's own website;",
     "ma03e07df6b35": "through automatic matching of property demand and supply across all relevant criteria;",
     "m9afa2ee80c25": "for client requests, from both the agency's internal database and a wide range of online listings. Visual search within an area on the map;",
@@ -454,6 +454,7 @@
     "md5bddab9fda8": "Publish listings on property portals",
     "m5cd16a04ad9b": "Avito, CIAN, Yandex Realty, DomClick, Youla, N1, MirKvartir and other online property portals.",
     "mea32c0b79d35": "Full list on the RECRM website ↗",
-    "m883bebfd2225": "Pause slideshow"
+    "m883bebfd2225": "Pause slideshow",
+    "m23ac260836fe": "£895,000"
   }
 }

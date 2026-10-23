@@ -98,6 +98,19 @@
 .comparison-card { display: flex; flex-direction: column; gap: 10px; width: 100% !important; min-width: 0; height: auto !important; }
 .comparison-visual { width: 100%; height: 180px; overflow: hidden; background: #f7f7f7; flex: none; }
 .comparison-art { position: relative; margin: 0 auto; }
+.comparison-segmented { position: absolute; top: 36px; left: 28px; display: flex; height: 52px; }
+.comparison-segmented > div { position: relative !important; top: auto !important; left: auto !important; display: flex; align-items: center !important; justify-content: center; flex: none; width: 146px; height: 52px; padding: 0 !important; }
+.comparison-segmented > div + div { width: 164px; margin-left: -1px; }
+.comparison-segmented [data-name="btn / text"] { justify-content: center; padding: 0 !important; }
+.comparison-matching-toggle { position: absolute; top: 39.34px; right: 16.878px; display: flex; align-items: center; gap: 16.41px; }
+.comparison-matching-toggle [data-name="toggler / yes"] { position: relative !important; top: auto !important; left: auto !important; flex: none; }
+.comparison-matching-title { position: static !important; width: auto !important; min-width: 196.312px; height: auto !important; white-space: nowrap !important; text-align: right; }
+.comparison-matches { position: absolute; top: 117px; left: 25.66px; right: 30px; display: flex; align-items: center; gap: 12px; height: 32px; }
+.comparison-matches-label { position: static !important; transform: none !important; flex: 1; min-width: 0; text-align: left; }
+.comparison-matches-label p { white-space: nowrap !important; }
+.comparison-counter { position: static !important; display: flex; justify-content: center; flex: none; width: 36px; height: 32px; padding: 0 !important; }
+html[lang="en"] .comparison-matches-label p { font-size: 21px; }
+html[lang="en"] .comparison-property-price { font-style: italic; }
 .comparison-description { position: static !important; inset: auto !important; margin: 0 !important; font-size: 20px !important; line-height: 26px !important; white-space: normal !important; }
 .challenges-grid { position: absolute; top: 450px; left: 217px; right: 83px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .challenge-card { display: flex; flex-direction: column; gap: 12px; min-width: 0; }

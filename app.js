@@ -1,4 +1,4 @@
-import {createLocalization} from './i18n.js?v=22';
+import {createLocalization} from './i18n.js?v=23';
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -79,6 +79,15 @@ function setMenu(open){
 function openMedia(html){$('#mediaContent').innerHTML=html;i18n.apply($('#media'));$('#media').showModal();restartProblemPlayback();}
 function showVideo(url,title){openMedia(`<h2>${esc(title)}</h2><iframe src="${esc(url)}?rel=0" title="${esc(title)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`);}
 function picture(src,title){openMedia(`<h2>${esc(title)}</h2><img src="${esc(src)}" alt="${esc(title)}">`);}
+function setupComparisonIllustrations(root){
+ const start=$('[data-name="btn / left"]',root),stop=$('[data-name="btn / right"]',root),segments=document.createElement('div');
+ segments.className='comparison-segmented';start.before(segments);segments.append(start,stop);
+ const title=$$('p',root).find(p=>p.textContent.trim()==='Автоподбор'),toggle=$('[data-name="toggler / yes"]',title.parentElement),matching=document.createElement('div');
+ matching.className='comparison-matching-toggle';title.classList.add('comparison-matching-title');toggle.before(matching);matching.append(toggle,title);
+ const label=$$('p',root).find(p=>p.textContent.trim()==='Заявка 2-ком квартира – Варианты').parentElement,counter=$('[data-name="counter / variants"]',root),matches=document.createElement('div');
+ matches.className='comparison-matches';label.classList.add('comparison-matches-label');counter.classList.add('comparison-counter');label.before(matches);matches.append(label,counter);
+ $$('p',root).find(p=>p.textContent.trim()==='32 000 000 ₽').classList.add('comparison-property-price');
+}
 function sourceScreen(id){
  const root=template(screens[id]);root.className='design-screen desktop-layout';root.style.width='100%';root.style.height='1158px';
  for(const n of [...root.children]){const name=n.dataset.name||'';if(['HEADER','FOOTER','MENU'].includes(name)||n.style.width==='100px')n.remove();}
@@ -124,6 +133,7 @@ function sourceScreen(id){
    }
   }
  }
+ if(id==='04')setupComparisonIllustrations(root);
  if(id==='05'){
   const section=$('[data-name="05-PROBLEMS"]',root),grid=document.createElement('div');grid.className='challenges-grid';
   for(const number of [1,2,3]){
