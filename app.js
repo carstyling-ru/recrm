@@ -1,4 +1,4 @@
-import {createLocalization} from './i18n.js?v=27';
+import {createLocalization} from './i18n.js?v=28';
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -31,7 +31,7 @@ const articleRoutes=[
  ['62','Главное мобильное приложение риэлтора','mobile-crm-guide'],
  ['63','Для чего нужна воронка продаж в риэлторском бизнесе','sales-funnel'],
  ['64','Конкурентные преимущества при использовании RECRM Online.','competitive-advantages'],
- ['65','Выбираем CRM-систему.','choosing-crm']
+ ['65','Выбираем CRM-систему','choosing-crm']
 ];
 const routes=[...definitions,...articleRoutes];
 const articleIds=new Set(articleRoutes.map(([id])=>id));
@@ -414,4 +414,4 @@ screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||articleIds.has(
 addEventListener('resize',resize);addEventListener('hashchange',()=>syncRoute());
 document.addEventListener('visibilitychange',restartProblemPlayback);
 const localizationReady=createLocalization().then(instance=>{i18n=instance;window.recrmI18n=instance;});
-try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=27'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
+try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=28'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
