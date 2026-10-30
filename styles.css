@@ -87,7 +87,7 @@
   position: absolute;
   top: 200px;
   left: 219px;
-  right: 720px;
+  right: calc(720px + var(--edge-inset) / var(--scale));
   max-width: calc(78.82% - 270px);
   display: flex;
   flex-direction: column;
@@ -186,12 +186,16 @@ html[lang="en"] .comparison-property-price { font-style: italic; }
 }
 .hero-rule { width: 225px; height: 5px; margin: 32px 0; background: white; flex: none; }
 .hero-copy .hero-description { max-width: 690px; font-size: 20px; line-height: 24px; }
-.hero-copy .hero-price { display: flex; align-items: baseline; gap: 14px; margin-top: 64px; font-family: 'Roboto Condensed', sans-serif; }
+.hero-copy .hero-price { display: flex; flex-wrap: wrap; max-width: 100%; align-items: baseline; gap: 14px; margin-top: 64px; font-family: 'Roboto Condensed', sans-serif; }
 .hero-copy .hero-price > span { font-size: 32px; }
 .hero-copy .hero-price strong { font-size: 72px; font-weight: 900; white-space: nowrap; }
 .hero-copy .hero-price small { max-width: 170px; font-size: 20px; line-height: 24px; }
-.hero-cta { display: flex; align-items: center; gap: 12px; margin-top: 24px; padding: 0; color: white; background: transparent; font: 400 20px/28px Inter, sans-serif; text-decoration: underline; text-underline-offset: 4px; }
-.hero.desktop-layout .hero-visual { left: auto !important; right: 82px; transform: none !important; }
+.hero-cta { display: flex; align-items: center; gap: 12px; margin-top: 24px; padding: 0; color: white; background: transparent; font: 400 20px/28px Inter, sans-serif; text-decoration: none; }
+.hero-cta-label { text-decoration: underline; text-underline-offset: 4px; }
+:root { --edge-inset: 28px; }
+.header, .footer { right: var(--edge-inset); }
+/* 82px reserves the illustration's overflow at the widest point of its animation. */
+.hero.desktop-layout .hero-visual { left: auto !important; right: calc(82px + var(--edge-inset) / var(--scale)); transform: none !important; }
 
 /* The original recrm.ru illustration moves each object on the same 10-second cycle. */
 .hero-visual > div { animation: hero-object-float 10s ease-in-out infinite; transform-origin: center top; }
@@ -210,6 +214,11 @@ html[lang="en"] .comparison-property-price { font-style: italic; }
 }
 
 @media (max-width: 760px) {
+  :root { --edge-inset: 14px; }
+  .mobile-layout:has(.mobile-hero-visual) { right: var(--edge-inset); }
+  .mobile-layout .mobile-cta.hero-cta-link { text-decoration: none; }
+  html[lang="ka"] .mobile-layout .hero-price { flex-wrap: wrap; }
+  html[lang="ka"] .mobile-layout .hero-price small { flex-basis: 100%; max-width: none; }
   .mobile-layout .mobile-hero-visual { height: calc(556px * var(--hero-mobile-scale)); }
   .mobile-layout .mobile-hero-visual > .hero-visual { left: auto !important; right: calc(82px * var(--hero-mobile-scale)); transform: scale(var(--hero-mobile-scale)) !important; transform-origin: top right !important; }
 }

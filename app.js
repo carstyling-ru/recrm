@@ -1,4 +1,4 @@
-import {createLocalization} from './i18n.js?v=30';
+import {createLocalization} from './i18n.js?v=31';
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -56,7 +56,7 @@ function resize(){
  const mobile=innerWidth<=760,s=mobile?1:Math.min(innerHeight/1158,innerWidth/1440);
  document.documentElement.style.setProperty('--scale',s);
  document.documentElement.style.setProperty('--rail',mobile?'52px':`${100*s}px`);
- document.documentElement.style.setProperty('--hero-mobile-scale',Math.min((innerWidth-98)/701,.6));
+ document.documentElement.style.setProperty('--hero-mobile-scale',Math.min((innerWidth-92)/701,.6));
  document.documentElement.style.setProperty('--comparison-scale',Math.min((innerWidth-98)/521,1));
  document.documentElement.style.setProperty('--challenge-scale',Math.min((innerWidth-98)/380,1));
  document.documentElement.style.setProperty('--onboarding-scale',Math.min((innerWidth-98)/380,1));
@@ -113,10 +113,10 @@ function sourceScreen(id){
  }
  if(id==='01'){
   root.classList.add('hero');
-  const intro=$('[data-name="01-INTRO"]',root),title=$('[data-name="H1"] p',intro).cloneNode(true),description=$('[data-name="TITLE"] > p',intro).textContent;
+  const intro=$('[data-name="01-INTRO"]',root),title=$('[data-name="H1"] p',intro).cloneNode(true),description=$('[data-name="TITLE"] > p',intro).textContent.replace('RECRM.RU','RECRM.online');
   $$('br',title).forEach(br=>br.replaceWith(' '));
   const copy=document.createElement('section');copy.className='hero-copy';
-  copy.innerHTML=`<h1>${esc(title.textContent.replace(/\s+/g,' ').trim())}</h1><div class="hero-rule"></div><p class="hero-description">${esc(description)}</p><div class="hero-price"><span>от</span><strong>345 ₽</strong><small>/мес. за сотрудника</small></div><button class="hero-cta" data-open-form>Попробовать бесплатно <span aria-hidden="true">→</span></button>`;
+  copy.innerHTML=`<h1>${esc(title.textContent.replace(/\s+/g,' ').trim())}</h1><div class="hero-rule"></div><p class="hero-description">${esc(description)}</p><div class="hero-price"><span>от</span><strong>345 ₽</strong><small>/мес. за сотрудника</small></div><button class="hero-cta" data-open-form><span class="hero-cta-label">Попробовать бесплатно</span><span aria-hidden="true">→</span></button>`;
   $$('[data-name="TITLE"],[data-name="PRICE"],[data-name="Try4free"]',intro).forEach(n=>n.remove());
   $('[data-name="VIS"]',intro).classList.add('hero-visual');intro.append(copy);
  }
@@ -265,7 +265,7 @@ function customHtml(id){
 }
 function featuresListHtml(){return `<ul class="features-list">${featureHighlights.map(text=>`<li><span>${esc(text)}</span></li>`).join('')}</ul>`;}
 function mobileHtml(id,desktop){
- if(id==='01')return `<h1>Помогаем получить максимум прибыли от сделок с недвижимостью</h1><p class="hero-description">RECRM.RU — это облачный сервис для руководителей и сотрудников агентства недвижимости, позволяющий работать легко, быстро и эффективно.</p><div class="mobile-hero-visual">${$('[data-name="VIS"]',desktop)?.outerHTML||''}</div><div class="hero-price">от <strong>345 ₽</strong><small>/мес. за сотрудника</small></div><button class="mobile-cta" data-open-form>Попробовать бесплатно →</button>`;
+ if(id==='01')return `<h1>Помогаем получить максимум прибыли от сделок с недвижимостью</h1><p class="hero-description">RECRM.online — это облачный сервис для руководителей и сотрудников агентства недвижимости, позволяющий работать легко, быстро и эффективно.</p><div class="mobile-hero-visual">${$('[data-name="VIS"]',desktop)?.outerHTML||''}</div><div class="hero-price">от <strong>345 ₽</strong><small>/мес. за сотрудника</small></div><button class="mobile-cta hero-cta-link" data-open-form><span class="hero-cta-label">Попробовать бесплатно</span> <span aria-hidden="true">→</span></button>`;
  if(id==='02')return `<h1>Ключевые возможности нашего продукта</h1><div class="features-mobile-visual"><img src="./assets/70364.png" alt="Интерфейс RECRM"><button data-overview aria-label="Смотреть видеообзор RECRM"><img src="./assets/777e8.svg" alt=""></button></div>${featuresListHtml()}`;
  if(id==='05')return `<h1>Топ-3 проблемы, которые мы решаем</h1>${$('.challenges-grid',desktop).outerHTML}`;
  if(id==='09')return `<h1>Настройка и запуск «под ключ»</h1>${$('.support-cards-grid',desktop).outerHTML}`;
@@ -418,4 +418,4 @@ screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||articleIds.has(
 addEventListener('resize',resize);addEventListener('hashchange',()=>syncRoute());
 document.addEventListener('visibilitychange',restartProblemPlayback);
 const localizationReady=createLocalization().then(instance=>{i18n=instance;window.recrmI18n=instance;});
-try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=30'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
+try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=31'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
