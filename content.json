@@ -468,5 +468,133 @@
         }
       ]
     }
+  ],
+  "testimonials": [
+    {
+      "id": "2",
+      "quote": "«Real Estate CRM легко внедряется и работа с ним приносит радость.»",
+      "authorLines": [
+        "Руководитель департамента,",
+        "Санкт-Петербург,",
+        "Коновалов А. В."
+      ],
+      "logo": "./assets/testimonial-02-logo.png",
+      "avatar": "./assets/testimonial-02-avatar.png",
+      "original": "./assets/testimonial-02-original.jpg"
+    },
+    {
+      "id": "3",
+      "quote": "«Планируем дальнейшее сотрудничество с этой компанией и рекомендуем другим.»",
+      "authorLines": [
+        "Руководитель по развитию,",
+        "Артюхов А.И."
+      ],
+      "logo": "./assets/testimonial-03-logo.png",
+      "avatar": "./assets/testimonial-03-avatar.png",
+      "original": "./assets/testimonial-03-original.jpg"
+    },
+    {
+      "id": "1",
+      "quote": "«Благодарим за помощь в решении автоматизации, качественное обслуживание, быстрое и четкое реагирование на возникающие вопросы.»",
+      "authorLines": [
+        "Директор,",
+        "Ю. Никоненко"
+      ],
+      "logo": "./assets/testimonial-01-logo.jpg",
+      "avatar": "./assets/testimonial-01-avatar.jpg",
+      "original": "./assets/testimonial-01-original.jpg"
+    },
+    {
+      "id": "4",
+      "quote": "«Могу с уверенностью рекомендовать продукт всем, для кого самой важной целью в бизнесе является развитие.»",
+      "authorLines": [
+        "Генеральный директор,",
+        "В.В. Мишин"
+      ],
+      "logo": "./assets/testimonial-04-logo.jpg",
+      "avatar": "./assets/testimonial-04-avatar.png",
+      "original": "./assets/testimonial-04-original.jpg"
+    },
+    {
+      "id": "5",
+      "quote": "«В ReCRM мы увидели оптимальное соотношение всех необходимых функций.»",
+      "authorLines": [
+        "Генеральный директор,",
+        "Москва,",
+        "Плохова Ирина"
+      ],
+      "logo": "./assets/testimonial-05-logo.png",
+      "avatar": "./assets/testimonial-05-avatar.png",
+      "original": "./assets/testimonial-05-original.jpg"
+    },
+    {
+      "id": "6",
+      "quote": "«Отличная программа, пользуемся ежедневно. Огромное спасибо!»",
+      "authorLines": [
+        "Директор,",
+        "Балыков М.И."
+      ],
+      "logo": "./assets/testimonial-06-logo.png",
+      "avatar": "./assets/testimonial-06-avatar.png",
+      "original": "./assets/testimonial-06-original.jpg"
+    },
+    {
+      "id": "7",
+      "quote": "«Мы внедрили Real Estate CRM в свою компанию довольно быстро, что позволило с первых же дней ощутить ее пользу и повысить производительность всего агентства.»",
+      "authorLines": [
+        "Генеральный директор,",
+        "А.Л. Васильев"
+      ],
+      "logo": "./assets/testimonial-07-logo.png",
+      "avatar": "./assets/testimonial-07-avatar.png",
+      "original": "./assets/testimonial-07-original.jpg"
+    },
+    {
+      "id": "8",
+      "quote": "«Была проблема в том, что вся информация хранилась в разных источниках и некоторый объем информации терялся. С CRM-системой эта проблема решилась»",
+      "authorLines": [
+        "Руководитель отдела продаж,",
+        "Красноярский край,",
+        "Юферова Ольга"
+      ],
+      "logo": "./assets/testimonial-08-logo.png",
+      "avatar": "./assets/testimonial-08-avatar.png"
+    },
+    {
+      "id": "9",
+      "quote": "«Вот уже на протяжении долгого времени ReCRM эффективно помогает справиться с поставленными задачами!»",
+      "authorLines": [
+        "Генеральный директор,",
+        "Москва,",
+        "Евгений Ким"
+      ],
+      "logo": "./assets/testimonial-09-logo.png",
+      "avatar": "./assets/testimonial-09-avatar.png",
+      "original": "./assets/testimonial-09-original.jpg"
+    },
+    {
+      "id": "10",
+      "quote": "«Теперь мы можем видеть производительность каждого сотрудника компании, его количество встреч, главных задач на день!»",
+      "authorLines": [
+        "Директор,",
+        "Уфа,",
+        "Анна Морозова"
+      ],
+      "logo": "./assets/testimonial-10-logo.png",
+      "avatar": "./assets/testimonial-10-avatar.png",
+      "original": "./assets/testimonial-10-original.png"
+    },
+    {
+      "id": "11",
+      "quote": "«За год пользования системой мы смогли, не без участия специалистов recrm, полностью обучить наших сотрудников работе с базой и интегрировать ее с нашими системами.»",
+      "authorLines": [
+        "Начальник отдела комменрческой недвижимости ,",
+        "Ростов-на-Дону,",
+        "Яловой Д.В."
+      ],
+      "logo": "./assets/testimonial-11-logo.png",
+      "avatar": "./assets/testimonial-11-avatar.png",
+      "original": "./assets/testimonial-11-original.jpg"
+    }
   ]
 }

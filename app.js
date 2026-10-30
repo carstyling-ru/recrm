@@ -1,4 +1,4 @@
-import {createLocalization} from './i18n.js?v=31';
+import {createLocalization} from './i18n.js?v=32';
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -127,8 +127,10 @@ function sourceScreen(id){
 
  if(id==='03'){
   const intro=$$('p',root).find(n=>n.textContent.startsWith('Мы оцифровываем агентства недвижимости'));if(intro)intro.style.left=$('[data-name="H1"]',root).style.left;
-  const cards=$$('[data-name^="feedback"]',root);const grid=document.createElement('div');grid.className='reviews-grid';
-  for(const card of cards){card.style.position='relative';card.style.left='auto';card.style.top='auto';card.style.width='100%';grid.append(card);}root.append(grid);
+  const note=$$('p',root).find(n=>n.textContent.startsWith('Наш продукт разработан'));if(note)note.classList.add('testimonial-note');
+  $$('[data-name^="feedback"]',root).forEach(card=>card.remove());
+  const carousel=document.createElement('section');carousel.className='testimonial-carousel';carousel.setAttribute('aria-label','Отзывы клиентов');
+  carousel.innerHTML=`<div class="reviews-grid">${content.testimonials.slice(0,3).map(testimonialCardHtml).join('')}</div>`;root.append(carousel);
  }
  if(id==='04'||id==='06'){
   const block=$('[data-name="Content"]',root);if(block){block.classList.add('feature-content');
@@ -201,16 +203,20 @@ function sourceScreen(id){
 function setupSlider(root,id){
  const old=$('[data-name="Scroll"]',root)||$('[data-name="SCROLL"]',root);if(old)old.remove();
  $$('[data-name="scroll-bg"],[data-name="scroll-button"]',root).forEach(n=>n.remove());
- const slider=document.createElement('input');slider.type='range';slider.min=0;slider.max=id==='03'?2:100;slider.step=1;slider.value=0;slider.className='carousel-control';slider.setAttribute('aria-label',id==='03'?'Отзывы клиентов':id==='08'?'Площадки выгрузки':'Фотографии разработчика');
+ const slider=document.createElement('input');slider.type='range';slider.min=0;slider.max=id==='03'?Math.max(0,content.testimonials.length-3):100;slider.step=1;slider.value=0;slider.className='carousel-control';slider.setAttribute('aria-label',id==='03'?'Отзывы клиентов':id==='08'?'Площадки выгрузки':'Фотографии разработчика');
  if(id==='08'){slider.style.top='826px';}if(id==='10')slider.style.top='951px';
- root.append(slider);
  if(id==='03'){
-  const cards=$$('[data-name^="feedback"]',root);const originals=cards.map(n=>n.innerHTML);
-  slider.addEventListener('input',()=>{cards.forEach((n,i)=>n.innerHTML=originals[(i+Number(slider.value))%originals.length]);i18n.apply(root);});
+  const carousel=$('.testimonial-carousel',root),grid=$('.reviews-grid',carousel);carousel.append(slider);
+  slider.addEventListener('input',()=>{const start=Number(slider.value);grid.innerHTML=content.testimonials.slice(start,start+3).map((review,i)=>testimonialCardHtml(review,start+i)).join('');i18n.apply(grid);});
  }else{
+  root.append(slider);
   const candidates=id==='10'?$$('img',root).filter(n=>/99c59|5c8ef/.test(n.src)).map(n=>n.parentElement):[$('[data-name="LOGOS"]',root)||$('[data-name="Logos"]',root)||$$('div',root).find(n=>n.style.gap==='100px')].filter(Boolean);
   slider.addEventListener('input',()=>candidates.forEach(n=>{n.style.translate=`${-Number(slider.value)*4}px 0`;}));
  }
+}
+function testimonialCardHtml(review,index){
+ const quote=review.original?`<a class="testimonial-quote" href="${esc(review.original)}" data-testimonial-original="${index}" title="Посмотреть оригинал отзыва">${esc(review.quote)}</a>`:`<p class="testimonial-quote">${esc(review.quote)}</p>`;
+ return `<article class="testimonial-card" data-testimonial="${esc(review.id)}"><img class="testimonial-logo" src="${esc(review.logo)}" alt="Логотип клиента">${quote}<div class="testimonial-divider" aria-hidden="true"><svg width="104" height="21" viewBox="0 0 104 21" fill="none"><path d="M0 1.5H84.5V19L102 1.5H104" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg><span></span></div><div class="testimonial-caption"><img class="testimonial-avatar" src="${esc(review.avatar)}" alt="Фото автора отзыва"><p class="testimonial-author">${review.authorLines.map(line=>`<span>${esc(line)}</span>`).join('')}</p></div></article>`;
 }
 function videosHtml(){return `<h1>Почему мы?</h1><div class="title-rule"></div><div class="video-grid">${content.videos.slice(0,3).map((v,i)=>`<button class="video-card" data-video="${i}"><div class="thumbnail"><img src="${esc(v.image)}" alt="${esc(v.title)}"><span class="play" aria-hidden="true">▶</span></div><small>${esc(v.title)}</small></button>`).join('')}</div><div class="photo-grid">${content.offices.slice(0,3).map((v,i)=>`<button class="video-card" data-office="${i}"><img src="${esc(v.image)}" alt="${esc(v.title)}"><small>${esc(v.title)}</small></button>`).join('')}</div>`;}
 const faqTitles=['Вопросы по настройке системы','Вопросы по сайту-витрине агентства','Вопросы по наполнению базы и удалению из неё данных','Вопросы по ведению заявок','Вопросы по поиску в CRM','Вопросы по задачам','Вопросы по выгрузке объявлений на интернет-площадки','Вопросы по отчетам','Цены, хостинг, тех. поддержка','Доработки'];
@@ -286,7 +292,7 @@ function mobileHtml(id,desktop){
  const seen=new Set();const paragraphs=$$('p',desktop).map(n=>n.textContent.trim()).filter(t=>t&&t!=='​'&&!seen.has(t)&&seen.add(t));
  const title=paragraphs.shift()||definitions.find(d=>d[0]===id)?.[1];
  if(id==='03'){
-  const cards=$$('[data-name^="feedback"]',desktop);return `<h1>Почему мы?</h1><p>Мы оцифровываем агентства недвижимости с 2012 года.</p>${cards.map(c=>`<article class="mobile-card">${$$('img',c).filter(n=>/939bd|eece3|5a121/.test(n.src)).map(n=>`<img src="${esc(n.getAttribute('src'))}" alt="Логотип клиента">`).join('')}${$$('p',c).map(n=>`<p>${esc(n.textContent)}</p>`).join('')}</article>`).join('')}`;
+  return `<h1>Почему мы?</h1><p>Мы оцифровываем агентства недвижимости с 2012 года.</p><div class="testimonials-list">${content.testimonials.map(testimonialCardHtml).join('')}</div>`;
  }
  if(id==='08')return `<h1>Выгрузка на площадки</h1><p>Автоматизированная отправка объявлений на профильные интернет-площадки экономит рабочее время сотрудников агентства.</p><div class="mobile-logos">${['c6ebe.svg','7de75.svg','c463d.svg','e6077.svg','2966d.png'].map(s=>`<img src="./assets/${s}" alt="Рекламная площадка">`).join('')}</div>`;
  return `<h1>${esc(title)}</h1>${mainImage?`<img class="mobile-image" src="./assets/${mainImage}" alt="Интерфейс RECRM">`:''}${paragraphs.map(t=>`<p style="margin-bottom:16px">${esc(t)}</p>`).join('')}`;
@@ -338,6 +344,7 @@ function setupProblemCarousel(){
 }
 function formHtml(){return `<div class="form-content"><h1>Хочу попробовать<br>Real Estate CRM в деле</h1><div class="title-rule"></div><form id="trialForm" class="trial-form"><label for="name">Как к вам обращаться?<input name="name" id="name" autocomplete="name" placeholder="Ваше имя" required minlength="2" value="${esc(formValues.name)}"></label><label class="sr-only" for="email">Электронная почта</label><input type="email" id="email" name="email" placeholder="Электронная почта" autocomplete="email" required value="${esc(formValues.email)}"><label for="phone"><span class="sr-only">Телефон для связи с вами</span><input type="tel" inputmode="tel" id="phone" name="phone" placeholder="Телефон для связи с вами" autocomplete="tel" required value="${esc(formValues.phone)}"><small>Только цифры, от 10 до 15</small></label><button class="submit-button" type="submit">ОТПРАВИТЬ</button></form><p class="form-policy">Регистрируясь, вы соглашаетесь с <a href="#legal-terms" data-legal="terms">Условиями использования</a> и <a href="#legal-privacy" data-legal="privacy">Политикой конфиденциальности</a></p><p class="form-note">Демонстрационная форма прототипа. Данные не отправляются.</p></div>`;}
 function wire(){
+ stage.onclick=e=>{const link=e.target.closest('[data-testimonial-original]');if(link){e.preventDefault();picture(content.testimonials[Number(link.dataset.testimonialOriginal)].original,'Отзыв клиента RECRM');}};
  $$('[data-support-link]',stage).forEach(n=>action(n,()=>go('51')));
  $$('[data-faq]',stage).forEach(b=>b.onclick=()=>{const g=content.faq[Number(b.dataset.faq)];openMedia('<h2>'+esc(g.title)+'</h2><div class="faq-modal">'+g.items.map(i=>'<h3>'+esc(i.question)+'</h3><p>'+esc(i.answer)+'</p>').join('')+'</div>');});
 
@@ -418,4 +425,4 @@ screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||articleIds.has(
 addEventListener('resize',resize);addEventListener('hashchange',()=>syncRoute());
 document.addEventListener('visibilitychange',restartProblemPlayback);
 const localizationReady=createLocalization().then(instance=>{i18n=instance;window.recrmI18n=instance;});
-try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=31'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
+try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=32'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
