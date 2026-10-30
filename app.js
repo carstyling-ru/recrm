@@ -1,4 +1,4 @@
-import {createLocalization} from './i18n.js?v=28';
+import {createLocalization} from './i18n.js?v=29';
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -221,7 +221,7 @@ function blogHtml(){
 }
 function articleHtml(id){
  const index=content.articles.findIndex(article=>article.id===id),a=content.articles[index],previousArticle=content.articles[index-1],nextArticle=content.articles[index+1];
- const pageLink=(entry,direction)=>entry?`<a class="article-page article-page--${direction}" rel="${direction}" href="#${esc(entry.slug)}"><small><span aria-hidden="true">${direction==='prev'?'←':'→'}</span> ${direction==='prev'?'Предыдущая статья':'Следующая статья'}</small><span>${esc(entry.title)}</span></a>`:'';
+ const pageLink=(entry,direction)=>entry?`<a class="article-page article-page--${direction}" rel="${direction}" href="#${esc(entry.slug)}"><span aria-hidden="true">${direction==='prev'?'←':'→'}</span>&nbsp;<span class="article-page-title">${esc(entry.title)}</span></a>`:'';
  const pagination=previousArticle||nextArticle?`<nav class="article-pagination" aria-label="Навигация по статьям">${pageLink(previousArticle,'prev')}${pageLink(nextArticle,'next')}</nav>`:'';
  const body=a.fullHtml||esc(a.fullText),trial=body.includes('data-open-form')?'':'<p class="article-actions"><a href="#free-trial" data-open-form>Попробовать бесплатно</a></p>';
  return `<a class="back-to-blog" href="#blog">← Все статьи</a><h1 class="article-title">${esc(a.title)}</h1><div class="article"><img class="article-cover" src="${esc(a.image)}" alt="${esc(a.title)}"><div class="article-text" tabindex="0"><div class="article-body">${body}</div>${trial}${pagination}</div></div>`;
@@ -414,4 +414,4 @@ screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||articleIds.has(
 addEventListener('resize',resize);addEventListener('hashchange',()=>syncRoute());
 document.addEventListener('visibilitychange',restartProblemPlayback);
 const localizationReady=createLocalization().then(instance=>{i18n=instance;window.recrmI18n=instance;});
-try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=28'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
+try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=29'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
