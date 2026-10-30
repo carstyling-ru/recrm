@@ -126,7 +126,7 @@ export class Localization {
 
 export async function createLocalization() {
  const loader = async locale => {
-  const response = await fetch(`./locales/${locale}.json?v=32`);
+  const response = await fetch(`./locales/${locale}.json?v=33`);
   if (!response.ok) throw new Error(`Cannot load locale ${locale}: ${response.status}`);
   return response.json();
  };

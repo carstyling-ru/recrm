@@ -95,6 +95,20 @@
   color: white;
 }
 
+.developer-gallery { position: absolute; top: 390px; left: 217px; right: calc(var(--edge-inset) / var(--scale)); min-width: 0; }
+.developer-gallery-viewport { display: flex; gap: 30px; height: 533.333px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; }
+.developer-gallery-viewport::-webkit-scrollbar { display: none; }
+.developer-photo { display: block; flex: 0 0 800px; min-width: 0; height: 100%; padding: 0; border-radius: 25px; background: #f2f2f2; overflow: hidden; }
+.developer-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.developer-photo:focus-visible { outline-offset: -5px; }
+.developer-gallery .carousel-control { position: static; width: min(510px,100%); height: 28px; margin: 28px 0 0; }
+@media (max-width: 760px) {
+  .mobile-layout .developer-gallery { position: static; margin: 24px 0; }
+  .mobile-layout .developer-gallery-viewport { height: auto; gap: 16px; }
+  .mobile-layout .developer-photo { flex-basis: 100%; height: auto; aspect-ratio: 3 / 2; border-radius: 18px; }
+  .mobile-layout .developer-gallery .carousel-control { width: 100%; margin-top: 18px; }
+}
+
 .testimonial-carousel { position: absolute; top: 460px; left: 217px; right: 130px; bottom: 180px; max-width: 1800px; display: flex; flex-direction: column; gap: 24px; }
 .testimonial-carousel .reviews-grid { position: static; flex: 1; min-height: 0; }
 .testimonial-carousel .carousel-control { position: static; width: min(510px,100%); height: 28px; flex: none; margin: 0; }

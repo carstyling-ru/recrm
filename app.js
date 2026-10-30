@@ -1,4 +1,4 @@
-import {createLocalization} from './i18n.js?v=32';
+import {createLocalization} from './i18n.js?v=33';
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -61,6 +61,7 @@ function resize(){
  document.documentElement.style.setProperty('--challenge-scale',Math.min((innerWidth-98)/380,1));
  document.documentElement.style.setProperty('--onboarding-scale',Math.min((innerWidth-98)/380,1));
  stage.style.width=mobile?'100%':`${innerWidth/s}px`;
+ $$('.developer-gallery',stage).forEach(syncDeveloperGallery);
 }
 const action=(n,callback,label)=>{if(!n)return;n.setAttribute('role','button');n.tabIndex=0;n.classList.add('action-target');if(label)n.setAttribute('aria-label',label);n.addEventListener('click',callback);n.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();callback();}});};
 function routeHash(id){return '#'+(id==='form'?'free-trial':routes.find(d=>d[0]===id)?.[2]||'intro');}
@@ -193,7 +194,12 @@ function sourceScreen(id){
   for(const child of [...section.children])if(child.style.fontSize==='0px')child.remove();
   const title=$(':scope > p',section);title.setAttribute('role','heading');title.setAttribute('aria-level','1');section.append(grid);
  }
- if(['03','08','10'].includes(id))setupSlider(root,id);
+ if(id==='10'){
+  $$('img',root).filter(n=>/99c59|5c8ef/.test(n.src)).forEach(n=>n.parentElement.remove());
+  $$('[data-name^="Scroll"],[data-name="SCROLL"],[data-name="scroll-bg"],[data-name="scroll-button"]',root).forEach(n=>n.remove());
+  root.append(template(developerGalleryHtml()));
+ }
+ if(['03','08'].includes(id))setupSlider(root,id);
  if(id==='08')for(const p of $$('p',root))if(p.textContent.includes('Ознакомьтесь с подробным'))action(p,()=>openMedia(`<h2>Выгрузка объявлений на площадки</h2><p>Авито, Циан, Яндекс Недвижимость, Домклик, Юла, N1, МирКвартир и другие интернет-площадки.</p><p style="margin-top:20px"><a href="https://recrm.ru/" target="_blank" rel="noopener">Подробный список на сайте RECRM ↗</a></p>`));
  if(id==='07'){action($$('img',root).find(n=>n.src.includes('24533'))?.parentElement,()=>window.open('https://apps.apple.com/ru/app/recrm-app/id1448632364?l=ru&ls=1','_blank','noopener'));action($$('img',root).find(n=>n.src.includes('7bc21'))?.parentElement,()=>window.open('https://play.google.com/store/apps/details?id=com.recrm.online','_blank','noopener'));}
  if(id==='09')for(const p of $$('.onboarding-material p',root))p.dataset.supportLink='';
@@ -204,15 +210,22 @@ function setupSlider(root,id){
  const old=$('[data-name="Scroll"]',root)||$('[data-name="SCROLL"]',root);if(old)old.remove();
  $$('[data-name="scroll-bg"],[data-name="scroll-button"]',root).forEach(n=>n.remove());
  const slider=document.createElement('input');slider.type='range';slider.min=0;slider.max=id==='03'?Math.max(0,content.testimonials.length-3):100;slider.step=1;slider.value=0;slider.className='carousel-control';slider.setAttribute('aria-label',id==='03'?'Отзывы клиентов':id==='08'?'Площадки выгрузки':'Фотографии разработчика');
- if(id==='08'){slider.style.top='826px';}if(id==='10')slider.style.top='951px';
+ if(id==='08')slider.style.top='826px';
  if(id==='03'){
   const carousel=$('.testimonial-carousel',root),grid=$('.reviews-grid',carousel);carousel.append(slider);
   slider.addEventListener('input',()=>{const start=Number(slider.value);grid.innerHTML=content.testimonials.slice(start,start+3).map((review,i)=>testimonialCardHtml(review,start+i)).join('');i18n.apply(grid);});
  }else{
   root.append(slider);
-  const candidates=id==='10'?$$('img',root).filter(n=>/99c59|5c8ef/.test(n.src)).map(n=>n.parentElement):[$('[data-name="LOGOS"]',root)||$('[data-name="Logos"]',root)||$$('div',root).find(n=>n.style.gap==='100px')].filter(Boolean);
+  const candidates=[$('[data-name="LOGOS"]',root)||$('[data-name="Logos"]',root)||$$('div',root).find(n=>n.style.gap==='100px')].filter(Boolean);
   slider.addEventListener('input',()=>candidates.forEach(n=>{n.style.translate=`${-Number(slider.value)*4}px 0`;}));
  }
+}
+function developerGalleryHtml(){
+ return `<section class="developer-gallery" aria-label="Фотографии разработчика"><div class="developer-gallery-viewport">${content.developerGallery.map((image,i)=>`<button class="developer-photo" data-developer-photo="${i}"><img src="${esc(image)}" alt="" decoding="async"><span class="sr-only"><span>Открыть фотографию</span> <span data-i18n-ignore>${i+1}</span></span></button>`).join('')}</div><input class="carousel-control" type="range" min="0" max="100" step="1" value="0" aria-label="Фотографии разработчика"></section>`;
+}
+function syncDeveloperGallery(gallery){
+ const viewport=$('.developer-gallery-viewport',gallery),distance=viewport.scrollWidth-viewport.clientWidth;
+ $('.carousel-control',gallery).value=distance>0?viewport.scrollLeft/distance*100:0;
 }
 function testimonialCardHtml(review,index){
  const quote=review.original?`<a class="testimonial-quote" href="${esc(review.original)}" data-testimonial-original="${index}" title="Посмотреть оригинал отзыва">${esc(review.quote)}</a>`:`<p class="testimonial-quote">${esc(review.quote)}</p>`;
@@ -286,7 +299,7 @@ function mobileHtml(id,desktop){
  if(id==='31')return `<h1>Сколько это стоит?</h1><p>${esc(content.pricing.caption)}</p>${pricingHtml('mobile')}`;
  if(id==='10'){
   const title=$('[data-name="H1"] p',desktop).textContent,intro=$('.section-lead',desktop),description=$$('p',desktop).find(p=>p.textContent.startsWith('Нами разработано'));
-  return `<h1>${esc(title)}</h1><p class="section-lead">${esc(intro.textContent)}</p><img class="mobile-image" src="./assets/99c59.png" alt="Команда Site-Mechanics"><p>${esc(description.textContent)}</p>`;
+  return `<h1>${esc(title)}</h1><p class="section-lead">${esc(intro.textContent)}</p>${developerGalleryHtml()}<p>${esc(description.textContent)}</p>`;
  }
  const mainImage={'07':'a900d.png','10':'99c59.png'}[id];
  const seen=new Set();const paragraphs=$$('p',desktop).map(n=>n.textContent.trim()).filter(t=>t&&t!=='​'&&!seen.has(t)&&seen.add(t));
@@ -344,6 +357,12 @@ function setupProblemCarousel(){
 }
 function formHtml(){return `<div class="form-content"><h1>Хочу попробовать<br>Real Estate CRM в деле</h1><div class="title-rule"></div><form id="trialForm" class="trial-form"><label for="name">Как к вам обращаться?<input name="name" id="name" autocomplete="name" placeholder="Ваше имя" required minlength="2" value="${esc(formValues.name)}"></label><label class="sr-only" for="email">Электронная почта</label><input type="email" id="email" name="email" placeholder="Электронная почта" autocomplete="email" required value="${esc(formValues.email)}"><label for="phone"><span class="sr-only">Телефон для связи с вами</span><input type="tel" inputmode="tel" id="phone" name="phone" placeholder="Телефон для связи с вами" autocomplete="tel" required value="${esc(formValues.phone)}"><small>Только цифры, от 10 до 15</small></label><button class="submit-button" type="submit">ОТПРАВИТЬ</button></form><p class="form-policy">Регистрируясь, вы соглашаетесь с <a href="#legal-terms" data-legal="terms">Условиями использования</a> и <a href="#legal-privacy" data-legal="privacy">Политикой конфиденциальности</a></p><p class="form-note">Демонстрационная форма прототипа. Данные не отправляются.</p></div>`;}
 function wire(){
+ $$('.developer-gallery',stage).forEach(gallery=>{
+  const viewport=$('.developer-gallery-viewport',gallery),slider=$('.carousel-control',gallery);
+  slider.oninput=()=>{viewport.scrollLeft=(viewport.scrollWidth-viewport.clientWidth)*Number(slider.value)/100;};
+  viewport.onscroll=()=>syncDeveloperGallery(gallery);
+  $$('[data-developer-photo]',gallery).forEach(button=>button.onclick=()=>picture(content.developerGallery[Number(button.dataset.developerPhoto)],'Команда Site-Mechanics'));
+ });
  stage.onclick=e=>{const link=e.target.closest('[data-testimonial-original]');if(link){e.preventDefault();picture(content.testimonials[Number(link.dataset.testimonialOriginal)].original,'Отзыв клиента RECRM');}};
  $$('[data-support-link]',stage).forEach(n=>action(n,()=>go('51')));
  $$('[data-faq]',stage).forEach(b=>b.onclick=()=>{const g=content.faq[Number(b.dataset.faq)];openMedia('<h2>'+esc(g.title)+'</h2><div class="faq-modal">'+g.items.map(i=>'<h3>'+esc(i.question)+'</h3><p>'+esc(i.answer)+'</p>').join('')+'</div>');});
@@ -425,4 +444,4 @@ screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||articleIds.has(
 addEventListener('resize',resize);addEventListener('hashchange',()=>syncRoute());
 document.addEventListener('visibilitychange',restartProblemPlayback);
 const localizationReady=createLocalization().then(instance=>{i18n=instance;window.recrmI18n=instance;});
-try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=32'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
+try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=33'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
