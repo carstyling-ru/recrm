@@ -1,4 +1,4 @@
-import {createLocalization} from './i18n.js?v=26';
+import {createLocalization} from './i18n.js?v=27';
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -219,7 +219,13 @@ function supportHtml(){return `<h1>Поддержка</h1><div class="title-rule
 function blogHtml(){
  return `<h1>Полезные статьи для риэлторов</h1><div class="title-rule"></div><div class="blog-layout">${content.articles.map(a=>`<article class="blog-card"><a href="#${esc(a.slug)}"><img src="${esc(a.image)}" alt="${esc(a.title)}"></a><div><h2><a href="#${esc(a.slug)}">${esc(a.title)}</a></h2><p>${esc(a.text)}</p></div></article>`).join('')}</div>`;
 }
-function articleHtml(id){const a=content.articles.find(article=>article.id===id),inline=a.layout==='inline';return `<h1 class="article-title">${esc(a.title)}</h1><div class="article${inline?' article--inline':''}">${inline?'':`<img src="${esc(a.image)}" alt="${esc(a.title)}">`}<div class="article-text" tabindex="0">${a.fullHtml||esc(a.fullText)}${inline?'<p class="article-actions"><a href="#free-trial" data-open-form>Попробовать бесплатно</a></p>':''}</div><a class="back-to-blog" href="#blog">← Все статьи</a></div>`;}
+function articleHtml(id){
+ const index=content.articles.findIndex(article=>article.id===id),a=content.articles[index],previousArticle=content.articles[index-1],nextArticle=content.articles[index+1];
+ const pageLink=(entry,direction)=>entry?`<a class="article-page article-page--${direction}" rel="${direction}" href="#${esc(entry.slug)}"><small><span aria-hidden="true">${direction==='prev'?'←':'→'}</span> ${direction==='prev'?'Предыдущая статья':'Следующая статья'}</small><span>${esc(entry.title)}</span></a>`:'';
+ const pagination=previousArticle||nextArticle?`<nav class="article-pagination" aria-label="Навигация по статьям">${pageLink(previousArticle,'prev')}${pageLink(nextArticle,'next')}</nav>`:'';
+ const body=a.fullHtml||esc(a.fullText),trial=body.includes('data-open-form')?'':'<p class="article-actions"><a href="#free-trial" data-open-form>Попробовать бесплатно</a></p>';
+ return `<a class="back-to-blog" href="#blog">← Все статьи</a><h1 class="article-title">${esc(a.title)}</h1><div class="article"><img class="article-cover" src="${esc(a.image)}" alt="${esc(a.title)}"><div class="article-text" tabindex="0"><div class="article-body">${body}</div>${trial}${pagination}</div></div>`;
+}
 function casesHtml(){return `<h1 style="font-size:48px">Бизнес-кейсы</h1><div class="case-list">${content.cases.map((c,i)=>`<details ${i===0?'open':''}><summary>${esc(c.title)}</summary><div class="case-content${c.image?'':' case-content--text'}">${c.image?`<img src="${esc(c.image)}" alt="${esc(c.title)}">`:""}<div class="case-copy">${c.text.split(/\n{2,}/).map(p=>`<p>${esc(p).replaceAll('\n','<br>')}</p>`).join('')}</div></div></details>`).join('')}</div>`;}
 function reviewsHtml(){return `<h1>Отзывы наших клиентов</h1><div class="title-rule"></div><div class="written-reviews">${[0,1,2].map(i=>{const r=content.reviews[i];return `<article>${r?.images[0]?`<img class="review-logo" src="${esc(r.images[0])}" alt="Логотип клиента">`:''}<div class="review-text">${esc(r?.text||'').replaceAll('\n\n','<br><br>')}</div>${r?.images.length?`<button class="review-original" data-letter="${i}">Посмотреть оригинал ↗</button>`:""}</article>`;}).join('')}</div>`;}
 function pricingHtml(layout){
@@ -408,4 +414,4 @@ screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||articleIds.has(
 addEventListener('resize',resize);addEventListener('hashchange',()=>syncRoute());
 document.addEventListener('visibilitychange',restartProblemPlayback);
 const localizationReady=createLocalization().then(instance=>{i18n=instance;window.recrmI18n=instance;});
-try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=26'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
+try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=27'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
