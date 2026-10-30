@@ -1,4 +1,4 @@
-import {createLocalization} from './i18n.js?v=25';
+import {createLocalization} from './i18n.js?v=26';
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -27,10 +27,14 @@ const definitions=[
 ];
 // Remove a slug from this set to restore the screen to sequential navigation.
 const sequenceExcluded=new Set(['advertising','customers','geography','support']);
-const routes=[
- ...definitions,
- ['62','Главное мобильное приложение риэлтора','mobile-crm-guide']
+const articleRoutes=[
+ ['62','Главное мобильное приложение риэлтора','mobile-crm-guide'],
+ ['63','Для чего нужна воронка продаж в риэлторском бизнесе','sales-funnel'],
+ ['64','Конкурентные преимущества при использовании RECRM Online.','competitive-advantages'],
+ ['65','Выбираем CRM-систему.','choosing-crm']
 ];
+const routes=[...definitions,...articleRoutes];
+const articleIds=new Set(articleRoutes.map(([id])=>id));
 const featureHighlights=[
  'Постоянный поток собственников из интернета;',
  'Выгрузка рекламы на ведущие площадки и собственный веб-сайт;',
@@ -213,10 +217,9 @@ const faqTitles=['Вопросы по настройке системы','Воп
 
 function supportHtml(){return `<h1>Поддержка</h1><div class="title-rule"></div><p>Не нашли ответ? Свяжитесь с нами</p><div class="support-grid"><div class="support-contact"><p>Вы можете <a href="https://t.me/recrmtechsupport_bot" target="_blank" rel="noopener">написать нам в Telegram</a> или позвонить по тел. <a href="tel:+74997537723">+7 (499) 753-77-23</a> с 9.00 до 17.00 по Москве в рабочие дни.</p><p>Электронные письма отправляйте в любое время на адрес: <a href="mailto:support@recrm.online">support@recrm.online</a></p></div><aside><h3>Полезно посмотреть</h3><a href="https://www.youtube.com/playlist?list=PLAs1mEzxDu2OVJimbjaamUuvv_17ABhPr" target="_blank" rel="noopener">Обучающие видеоролики по использованию ReCRM</a><a href="https://recrm.ru/support/" target="_blank" rel="noopener">Руководство пользователя CRM</a><a href="http://docs.google.com/document/d/1jMP1yBEX3UG6_LHVKTegBipkyP1CVAZh/" target="_blank" rel="noopener">Документация по API</a></aside></div><h3 style="margin-top:35px">Ответы на часто задаваемые вопросы</h3><div class="faq-list">${content.faq.map((g,i)=>`<button class="faq-link" data-faq="${i}">${esc(g.title)}</button>`).join('')}</div>`;}
 function blogHtml(){
- const a=content.article;
- return `<h1>Полезные статьи для риэлторов</h1><div class="title-rule"></div><div class="blog-layout"><article class="blog-card"><a href="#mobile-crm-guide"><img src="${esc(a.image)}" alt="${esc(a.title)}"></a><div><h2><a href="#mobile-crm-guide">${esc(a.title)}</a></h2><p>${esc(a.text)}</p></div></article></div>`;
+ return `<h1>Полезные статьи для риэлторов</h1><div class="title-rule"></div><div class="blog-layout">${content.articles.map(a=>`<article class="blog-card"><a href="#${esc(a.slug)}"><img src="${esc(a.image)}" alt="${esc(a.title)}"></a><div><h2><a href="#${esc(a.slug)}">${esc(a.title)}</a></h2><p>${esc(a.text)}</p></div></article>`).join('')}</div>`;
 }
-function articleHtml(){const a=content.article;return `<h1 class="article-title">${esc(a.title)}</h1><div class="article"><img src="${esc(a.image)}" alt="${esc(a.title)}"><div class="article-text">${a.fullHtml||esc(a.fullText)}</div><a class="back-to-blog" href="#blog">← Все статьи</a></div>`;}
+function articleHtml(id){const a=content.articles.find(article=>article.id===id),inline=a.layout==='inline';return `<h1 class="article-title">${esc(a.title)}</h1><div class="article${inline?' article--inline':''}">${inline?'':`<img src="${esc(a.image)}" alt="${esc(a.title)}">`}<div class="article-text" tabindex="0">${a.fullHtml||esc(a.fullText)}${inline?'<p class="article-actions"><a href="#free-trial" data-open-form>Попробовать бесплатно</a></p>':''}</div><a class="back-to-blog" href="#blog">← Все статьи</a></div>`;}
 function casesHtml(){return `<h1 style="font-size:48px">Бизнес-кейсы</h1><div class="case-list">${content.cases.map((c,i)=>`<details ${i===0?'open':''}><summary>${esc(c.title)}</summary><div class="case-content${c.image?'':' case-content--text'}">${c.image?`<img src="${esc(c.image)}" alt="${esc(c.title)}">`:""}<div class="case-copy">${c.text.split(/\n{2,}/).map(p=>`<p>${esc(p).replaceAll('\n','<br>')}</p>`).join('')}</div></div></details>`).join('')}</div>`;}
 function reviewsHtml(){return `<h1>Отзывы наших клиентов</h1><div class="title-rule"></div><div class="written-reviews">${[0,1,2].map(i=>{const r=content.reviews[i];return `<article>${r?.images[0]?`<img class="review-logo" src="${esc(r.images[0])}" alt="Логотип клиента">`:''}<div class="review-text">${esc(r?.text||'').replaceAll('\n\n','<br><br>')}</div>${r?.images.length?`<button class="review-original" data-letter="${i}">Посмотреть оригинал ↗</button>`:""}</article>`;}).join('')}</div>`;}
 function pricingHtml(layout){
@@ -248,7 +251,7 @@ function customHtml(id){
  if(id==='41')return videosHtml();
  if(id==='42')return reviewsHtml();
  if(id==='43')return `<h1>Более 3000 риэлторов используют<br>ReCRM ежедневно в своей работе</h1><div class="title-rule"></div><strong class="map-year">2020</strong><img src="./assets/client-map.svg" alt="География клиентов RECRM по всей России" class="client-map"><input class="map-slider" type="range" min="2012" max="2020" value="2020" aria-label="Год на карте клиентов">`;
- if(id==='51')return supportHtml();if(id==='61')return blogHtml();if(id==='62')return articleHtml();return '';
+ if(id==='51')return supportHtml();if(id==='61')return blogHtml();if(articleIds.has(id))return articleHtml(id);return '';
 }
 function featuresListHtml(){return `<ul class="features-list">${featureHighlights.map(text=>`<li><span>${esc(text)}</span></li>`).join('')}</ul>`;}
 function mobileHtml(id,desktop){
@@ -262,7 +265,7 @@ function mobileHtml(id,desktop){
   const title=$$('[data-name="H1"] p',desktop).map(p=>{const copy=p.cloneNode(true);$$('br',copy).forEach(br=>br.replaceWith(' '));return copy.textContent.trim();}).join(' ');
   return `<h1>${esc(title)}</h1><div class="comparison-grid">${cards.map(card=>card.outerHTML).join('')}</div>`;
  }
- if(['21','24','41','42','43','51','61','62'].includes(id))return customHtml(id);
+ if(['21','24','41','42','43','51','61'].includes(id)||articleIds.has(id))return customHtml(id);
  if(id==='22')return problemHtml(true);
  if(id==='31')return `<h1>Сколько это стоит?</h1><p>${esc(content.pricing.caption)}</p>${pricingHtml('mobile')}`;
  if(id==='10'){
@@ -354,7 +357,7 @@ function render(id,animate=true){
  current=id;if(menuOpen)setMenu(false);
  const blue=bluePages.has(id);document.body.classList.toggle('is-blue',blue);$('#backdrop').style.background=blue?'#368cfb':'white';
  document.body.dataset.screen=id;
- $('.trial').hidden=id==='form';$('#closeForm').hidden=id!=='form';$('.screen-controls').hidden=id==='form'||id==='62';
+ $('.trial').hidden=id==='form';$('#closeForm').hidden=id!=='form';$('.screen-controls').hidden=id==='form'||articleIds.has(id);
  stage.innerHTML='';
  if(id==='form'){const wrapper=document.createElement('div');wrapper.innerHTML=formHtml();stage.append(wrapper);}else{
   let desktop;if(id==='22'){desktop=template(`<div class="design-screen desktop-layout" style="background:#368cfb">${problemHtml()}</div>`);}else if(screens[id]&&id!=='24')desktop=sourceScreen(id);else desktop=template(`<div class="design-screen desktop-layout"><section class="custom-screen ${blue?'blue':''}">${customHtml(id)}</section></div>`);
@@ -387,13 +390,13 @@ $$('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close()
 document.addEventListener('keydown',e=>{
  if(e.key==='Escape'){if(e.target.tagName==='SELECT')return;if(menuOpen)setMenu(false);else if(current==='form')go(previous);return;}
  if(menuOpen&&e.key==='Tab'){const focus=[$('#menuToggle'),...$$('a,button',$('#menu'))];const first=focus[0],last=focus.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}return;}
- if(menuOpen||current==='62'||$('dialog[open]')||/INPUT|TEXTAREA|SELECT|SUMMARY/.test(e.target.tagName)||(e.key===' '&&e.target.closest('button,a,details')))return;
+ if(menuOpen||articleIds.has(current)||$('dialog[open]')||/INPUT|TEXTAREA|SELECT|SUMMARY/.test(e.target.tagName)||(e.key===' '&&e.target.closest('button,a,details')))return;
  if(['ArrowDown','PageDown',' '].includes(e.key)){e.preventDefault();move(1);}if(['ArrowUp','PageUp'].includes(e.key)){e.preventDefault();move(-1);}if(e.key==='Home'){e.preventDefault();go('01');}if(e.key==='End'){e.preventDefault();go(definitions.at(-1)[0]);}
 });
 let wheelSum=0,wheelTime=0;
 addEventListener('wheel',e=>{
- if(menuOpen||current==='62'||$('dialog[open]')||e.target.closest('input,textarea,select')||e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;
- const scrollables='.mobile-layout,.form-content,.case-list,.case-content,.article-text,.faq-list';
+ if(menuOpen||articleIds.has(current)||$('dialog[open]')||e.target.closest('input,textarea,select')||e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;
+ const scrollables='.mobile-layout,.form-content,.case-list,.case-content,.article-text,.faq-list,.blog-layout';
  for(let scroller=e.target.closest(scrollables);scroller;scroller=scroller.parentElement?.closest(scrollables)){
   if(scroller.scrollHeight>scroller.clientHeight+3){const down=e.deltaY>0;if((down&&scroller.scrollTop+scroller.clientHeight<scroller.scrollHeight-3)||(!down&&scroller.scrollTop>3))return;}
  }
@@ -401,8 +404,8 @@ addEventListener('wheel',e=>{
 },{passive:false});
 let touchStart=null;
 screen.addEventListener('touchstart',e=>{touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY,target:e.target};},{passive:true});
-screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||current==='62'||touchStart.target.closest('input,textarea,select'))return;const dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;const scroller=touchStart.target.closest('.mobile-layout,.form-content');if(scroller&&scroller.scrollHeight>scroller.clientHeight+3&&((dy<0&&scroller.scrollTop+scroller.clientHeight<scroller.scrollHeight-3)||(dy>0&&scroller.scrollTop>3)))return;if(Math.abs(dy)>65&&Math.abs(dy)>Math.abs(dx)*1.3)move(dy<0?1:-1);touchStart=null;},{passive:true});
+screen.addEventListener('touchend',e=>{if(!touchStart||menuOpen||articleIds.has(current)||touchStart.target.closest('input,textarea,select'))return;const dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;const scroller=touchStart.target.closest('.mobile-layout,.form-content');if(scroller&&scroller.scrollHeight>scroller.clientHeight+3&&((dy<0&&scroller.scrollTop+scroller.clientHeight<scroller.scrollHeight-3)||(dy>0&&scroller.scrollTop>3)))return;if(Math.abs(dy)>65&&Math.abs(dy)>Math.abs(dx)*1.3)move(dy<0?1:-1);touchStart=null;},{passive:true});
 addEventListener('resize',resize);addEventListener('hashchange',()=>syncRoute());
 document.addEventListener('visibilitychange',restartProblemPlayback);
 const localizationReady=createLocalization().then(instance=>{i18n=instance;window.recrmI18n=instance;});
-try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=25'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
+try{[screens,content]=await Promise.all([...['./screens.json','./content.json?v=26'].map(async url=>{const r=await fetch(url);if(!r.ok)throw Error(url);return r.json();}),localizationReady]);syncRoute(false);}catch(error){console.error(error);await localizationReady.catch(()=>{});$('#loadError').hidden=false;i18n.apply($('#loadError'));}
