@@ -15,7 +15,7 @@
         "id": "start",
         "name": "Старт",
         "employees": "1–2 сотрудника",
-        "subscription": "полугодовая подписка (оплата картой)",
+        "subscription": "полугодовая подписка",
         "price": "23 000 ₽/полгода",
         "unit": "за всю компанию",
         "features": [
@@ -42,7 +42,7 @@
         "id": "business",
         "name": "Бизнес",
         "employees": "от 3 сотрудников",
-        "subscription": "квартальная подписка (оплата картой)",
+        "subscription": "квартальная подписка",
         "price": "от 6 300 ₽/мес",
         "unit": "за всю компанию",
         "features": [
@@ -81,7 +81,7 @@
         "id": "premium",
         "name": "Премиум",
         "employees": "от 30 сотрудников",
-        "subscription": "месячная подписка (карта/безнал)",
+        "subscription": "месячная подписка",
         "price": "от 500 ₽/мес",
         "unit": "за 1 сотрудника",
         "features": [
@@ -286,7 +286,7 @@
     {
       "id": "64",
       "slug": "competitive-advantages",
-      "title": "Конкурентные преимущества при использовании RECRM Online.",
+      "title": "Конкурентные преимущества при использовании RECRM Online",
       "text": "В любом крупном городе работают десятки, если не сотни агентств, которые активно конкурируют между собой. Мы подготовили для вас решение, как с помощью нашей системы вы сможете получить конкурентное преимущество перед другими агентствами:",
       "image": "./assets/article-154-1.png",
       "url": "https://recrm.ru/blog/154/",
@@ -483,6 +483,29 @@
       "original": "./assets/testimonial-02-original.jpg"
     },
     {
+      "id": "9",
+      "quote": "«Вот уже на протяжении долгого времени ReCRM эффективно помогает справиться с поставленными задачами!»",
+      "authorLines": [
+        "Генеральный директор,",
+        "Москва,",
+        "Евгений Ким"
+      ],
+      "logo": "./assets/testimonial-09-logo.png",
+      "avatar": "./assets/testimonial-09-avatar.png",
+      "original": "./assets/testimonial-09-original.jpg"
+    },
+    {
+      "id": "7",
+      "quote": "«Мы внедрили Real Estate CRM в свою компанию довольно быстро, что позволило с первых же дней ощутить ее пользу и повысить производительность всего агентства.»",
+      "authorLines": [
+        "Генеральный директор,",
+        "А.Л. Васильев"
+      ],
+      "logo": "./assets/testimonial-07-logo.png",
+      "avatar": "./assets/testimonial-07-avatar.png",
+      "original": "./assets/testimonial-07-original.jpg"
+    },
+    {
       "id": "3",
       "quote": "«Планируем дальнейшее сотрудничество с этой компанией и рекомендуем другим.»",
       "authorLines": [
@@ -539,17 +562,6 @@
       "original": "./assets/testimonial-06-original.jpg"
     },
     {
-      "id": "7",
-      "quote": "«Мы внедрили Real Estate CRM в свою компанию довольно быстро, что позволило с первых же дней ощутить ее пользу и повысить производительность всего агентства.»",
-      "authorLines": [
-        "Генеральный директор,",
-        "А.Л. Васильев"
-      ],
-      "logo": "./assets/testimonial-07-logo.png",
-      "avatar": "./assets/testimonial-07-avatar.png",
-      "original": "./assets/testimonial-07-original.jpg"
-    },
-    {
       "id": "8",
       "quote": "«Была проблема в том, что вся информация хранилась в разных источниках и некоторый объем информации терялся. С CRM-системой эта проблема решилась»",
       "authorLines": [
@@ -559,18 +571,6 @@
       ],
       "logo": "./assets/testimonial-08-logo.png",
       "avatar": "./assets/testimonial-08-avatar.png"
-    },
-    {
-      "id": "9",
-      "quote": "«Вот уже на протяжении долгого времени ReCRM эффективно помогает справиться с поставленными задачами!»",
-      "authorLines": [
-        "Генеральный директор,",
-        "Москва,",
-        "Евгений Ким"
-      ],
-      "logo": "./assets/testimonial-09-logo.png",
-      "avatar": "./assets/testimonial-09-avatar.png",
-      "original": "./assets/testimonial-09-original.jpg"
     },
     {
       "id": "10",
